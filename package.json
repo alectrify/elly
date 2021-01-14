@@ -1,0 +1,39 @@
+{
+  "name": "elly",
+  "version": "1.0.0",
+  "description": "A tool for medical workers to easily store and manage patient data.",
+  "main": "index.js",
+  "scripts": {
+    "js": "webpack",
+    "sass": "sass scss/custom.scss public/styles/bootstrap.css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alectrify/elly.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alectrify/elly/issues"
+  },
+  "homepage": "https://github.com/alectrify/elly#readme",
+  "dependencies": {
+    "@google-cloud/vision": "^2.3.0",
+    "@popperjs/core": "^2.6.0",
+    "body-parser": "^1.19.0",
+    "bootstrap": "^5.0.0-beta1",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "mongoose": "^5.11.11",
+    "multer": "^1.4.2",
+    "xlsx": "^0.16.9"
+  },
+  "devDependencies": {
+    "jquery": "^3.5.1",
+    "nodemon": "^2.0.7",
+    "webpack": "^5.14.0",
+    "webpack-cli": "^4.3.1"
+  }
+}

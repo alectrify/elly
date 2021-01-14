@@ -1,0 +1,19 @@
+$(document).ready(() => {
+    fetch('/api/records')
+        .then((response) => response.json())
+        .then((records) => {
+            records.forEach(record => {
+                let newRow = $('#scanTable').append('<tr></tr>').children().last();
+                let sheetJSON = record.sheetJSON[0];
+
+                newRow.append(`<td>${sheetJSON.barcode}</td>`);
+                newRow.append(`<td>${sheetJSON.firstName} ${sheetJSON.lastName}</td>`);
+
+                // Create download button
+                newRow.append(`<td><a class="btn btn-info" href="/api/download/${record._id}"><i class="bi bi-download"></i> Download</a></td>`);
+
+                // Create delete button
+                newRow.append(`<td><a class="btn btn-danger" href="/api/delete/${record._id}">Delete</a></td>`);
+            });
+        });
+});
