@@ -2,7 +2,6 @@
 const express = require('express');
 
 /* ---------- CONSTANTS ---------- */
-const app = express();
 const router = express.Router();
 
 /* ---------- INITIALIZATION ---------- */
@@ -12,6 +11,10 @@ const router = express.Router();
 /* ---------- ROUTES ---------- */
 router.get('/', (req, res) => {
     res.render('../views/index.ejs');
+});
+
+router.get('/edit/:id/:batch/:page', (req, res) => {
+    res.render('../views/edit.ejs');
 });
 
 router.get('/records', (req, res) => {

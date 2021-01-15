@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 
 const recordSchema = new mongoose.Schema({
-    id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'PDF'
-    },
+    id: mongoose.Schema.Types.ObjectId,
+    batchNum: Number,
     pageNum: Number,
+    ocrResults: [String],
     sheetJSON: {}
 });
 

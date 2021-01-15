@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="../../../styles/bootstrap.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../../../styles/style.css">
+
+    <title>Elly - Edit your scan</title>
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
+                    aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <a class="navbar-brand text-primary" href="/">
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+                    Elly
+                </a>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/records">Records</a>
+                    </li>
+                    <li class="nav-item mx-4">
+                        <button id="fixPDF" class="btn btn-info">Toggle: Fix PDF Position</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="pt-4">
+        <div class="container-fluid pt-4 px-4">
+            <h1 class="text-primary text-center">
+                Edit Your Scan Information
+            </h1>
+            <h6 class="text-center text-danger">(PDF Preview may take a little bit to load for large pdf uploads)</h6>
+            <div class="row">
+                <div class="col-8 pr-5">
+                    <div id="pdfBox">
+                        <canvas id="pdfCanvas"></canvas>
+                        <h1 class="mt-5">Scanned Filtered Output</h1>
+                        <p>
+                        </p>
+
+                        <h1 class="mt-5">Scanned Raw Output</h1>
+                        <p>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <form id="editForm" method="post" action="">
+                        <div class="mb-3">
+                            <label for="barcode" class="form-label">Barcode Number</label>
+                            <input type="text" class="form-control" id="barcode" value="" name="barcode">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="physician" class="form-label">Physician's Name</label>
+                            <input type="text" class="form-control" id="physician" name="physician">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="npi" class="form-label">NPI No.</label>
+                            <input type="text" class="form-control" id="npi" name="npi">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="collectionDate" class="form-label">Collection Date</label>
+                            <input type="text" class="form-control" id="collectionDate" name="collectionDate">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="middleName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" id="middleName" name="middleName">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" name="address">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" class="form-control" id="city" name="city">
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state">
+                            </div>
+
+                            <div class="col">
+                                <label for="zip" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="zip" name="zip">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">E-mail</label>
+                            <input type="text" class="form-control" id="email" name="email">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number (XXX-XXX-XXXX)</label>
+                            <input type="text" class="form-control" id="phone" name="phone">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="birthDate" class="form-label">Birth Date (MM/DD/YYYY)</label>
+                            <input type="text" class="form-control" id="birthDate" name="birthDate">
+                        </div>
+
+                        <div class="mb-3">
+                            Sex:
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sex" id="male" value="male"
+                                       checked>
+                                <label class="form-check-label" for="male">Male</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="sex" id="female"
+                                       value="female">
+                                <label class="form-check-label" for="female">Female</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input class="form-check-input" type="checkbox" value="true" id="hasInsurance"
+                                   checked>
+                            <label class="form-check-label" for="hasInsurance">
+                                Has Insurance
+                            </label>
+                        </div>
+
+                        <div id="insuranceFields" class="mb-3 p-3 border rounded">
+                            <div class="mb-3">
+                                <label for="insuranceName" class="form-label">Insurance Name</label>
+                                <input type="text" class="form-control" id="insuranceName" name="insuranceName">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="insuranceNum" class="form-label">Policy Number or Insurance
+                                    ID</label>
+                                <input type="text" class="form-control" id="insuranceNum" name="insuranceNum">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            Symptoms experienced in the last 14 days:<br>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="cough"
+                                       value="cough">
+                                <label class="form-check-label" for="cough">Cough</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="fever"
+                                       value="fever">
+                                <label class="form-check-label" for="fever">Fever</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="chills"
+                                       value="chills">
+                                <label class="form-check-label" for="chills">Chills</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="soreThroat"
+                                       value="soreThroat">
+                                <label class="form-check-label" for="soreThroat">Sore throat</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="fatigue"
+                                       value="fatigue">
+                                <label class="form-check-label" for="fatigue">Fatigue</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="vomiting"
+                                       value="vomiting">
+                                <label class="form-check-label" for="vomiting">Vomiting</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="nausea"
+                                       value="nausea">
+                                <label class="form-check-label" for="nausea">Nausea</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="headache"
+                                       value="headache">
+                                <label class="form-check-label" for="headache">Headache</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="diarrhea"
+                                       value="diarrhea">
+                                <label class="form-check-label" for="diarrhea">Diarrhea</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="runnyNose"
+                                       value="runnyNose">
+                                <label class="form-check-label" for="runnyNose">Runny Nose</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="illness"
+                                       value="illness">
+                                <label class="form-check-label" for="illness">Sense of illness</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="aches"
+                                       value="aches">
+                                <label class="form-check-label" for="aches">Muscle Aches</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="tasteLoss"
+                                       value="tasteLoss">
+                                <label class="form-check-label" for="tasteLoss">Loss of taste</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" name="symptoms" id="none" value="none"
+                                       checked>
+                                <label class="form-check-label" for="none">None</label>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            Race
+                            <br>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="race" id="native" value="native">
+                                <label class="form-check-label" for="native">American Indian or Alaskan Native</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="race" id="asian" value="asian">
+                                <label class="form-check-label" for="asian">Asian</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="race" id="colored"
+                                       value="colored">
+                                <label class="form-check-label" for="colored">Black or African American Native</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="race" id="islander"
+                                       value="islander">
+                                <label class="form-check-label" for="islander">Pacific Islander</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="race" id="white" value="white">
+                                <label class="form-check-label" for="white">White</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="race" id="other" value="other">
+                                <label class="form-check-label" for="other">Other</label>
+                            </div>
+
+                        </div>
+
+                        <div class="mb-3">
+                            Ethnicity
+                            <br>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ethnicity" id="latinx"
+                                       value="latinx">
+                                <label class="form-check-label" for="latinx">Hispanic or Latino</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ethnicity" id="notLatinx"
+                                       value="notLatinx">
+                                <label class="form-check-label" for="notLatinx">Not Hispanic or Latino</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="ethnicity" id="other"
+                                       value="other">
+                                <label class="form-check-label" for="ethnicity">Unknown or Other</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ssn" class="form-label">Social Security Number</label>
+                            <input type="text" class="form-control" id="ssn" name="ssn">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="driverLicense" class="form-label">Driver License Number</label>
+                            <input type="text" class="form-control" id="driverLicense" name="driverLicense">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container pt-5">
+
+    </div>
+</main>
+
+<!-- Bundle: Bootstrap, jQuery -->
+<script src="../../../scripts/bundle.js"></script>
+
+<!-- PDF Worker -->
+
+<!-- Custom JavaScript -->
+<script>
+    const urlSections = window.location.pathname.split('/');
+    const id = urlSections[urlSections.length - 3];
+    const batchNum = urlSections[urlSections.length - 2];
+    const pageNum = urlSections[urlSections.length - 1];
+
+    $('#editForm').attr('action', `/api/submit/${id}/${batchNum}/${pageNum}`);
+
+    const hasInsurance = $('#hasInsurance');
+    const insuranceFields = $('#insuranceFields');
+    const pdfBox = $('#pdfCanvas');
+
+    $(document).ready(function () {
+        hasInsurance.click(function () {
+            if ($(this).is(':checked')) {
+                insuranceFields.show();
+            } else {
+                insuranceFields.hide();
+                $('#insuranceNum').val('');
+                $('#insuranceName').val('');
+            }
+        });
+
+        $('#fixPDF').click(function () {
+            const pdfBoxRect = document.getElementById('pdfBox').getBoundingClientRect();
+            const pdfBoxLeft = pdfBoxRect.left;
+            const pdfBoxTop = pdfBoxRect.top;
+
+            pdfBox.toggleClass('position-fixed');
+            pdfBox.css('top', pdfBoxTop);
+            pdfBox.css('left', pdfBoxLeft);
+
+        });
+    });
+</script>
+<script src="../../../scripts/render-pdf.js"></script>
+<script src="../../../scripts/form-populator.js"></script>
+</body>
+</html>

@@ -3,14 +3,12 @@ A tool for medical workers to easily store and manage patient data.
 
 ## Installation and Usage
 Type <code>npm install</code> in the root directory to install packages.
-### Linux
-#### Google Vision API
-Type <code>export GOOGLE_APPLICATION_CREDENTIALS="/[PATH]/Development-7ee81f036c81.json"</code> in the terminal of your current shell session.
 
+### General
 #### MongoDB
 Download MongoDB: https://www.mongodb.com/try/download/community
 <br>
-Start your MongoDB server with <code>mongodb://localhost:27017/elly</code> to allow database functionality.
+Create a <code>.env</code> file and set MONGO_URI to <code>mongodb://localhost:27017/elly</code> to allow database functionality.
 
 #### Sass
 Install sass: https://sass-lang.com/install
@@ -19,3 +17,7 @@ Type <code>npm run sass</code> to compile and bundle custom Bootstrap CSS in <co
 
 #### Webpack
 Type <code>npm run js</code> to compile and bundle browser JS dependencies in <code>src/bundle.js</code>.
+
+### Linux
+#### Google Vision API
+Type <code>export GOOGLE_APPLICATION_CREDENTIALS="/[PATH]/Development-7ee81f036c81.json"</code> in the terminal of your current shell session.
