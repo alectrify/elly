@@ -294,7 +294,7 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
         const sheetJSON = XLSX.utils.sheet_to_json(worksheet);
 
         Record.create({
-            sheetJSON: sheetJSON
+            sheetJSON: sheetJSON[0]
         }).then(() => {
             fs.unlink(req.file.path, (err) => {
                 if (err) throw err;
