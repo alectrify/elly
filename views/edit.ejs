@@ -58,88 +58,126 @@
                 <div class="col-8 pr-5">
                     <div id="pdfBox">
                         <canvas id="pdfCanvas"></canvas>
-                        <h1 class="mt-5">Scanned Filtered Output</h1>
-                        <p>
-                        </p>
-
-                        <h1 class="mt-5">Scanned Raw Output</h1>
-                        <p>
-                        </p>
                     </div>
                 </div>
 
                 <div class="col-4">
                     <form id="editForm" method="post" action="">
-                        <div class="mb-3">
-                            <label for="barcode" class="form-label">Barcode Number</label>
-                            <input type="text" class="form-control" id="barcode" value="" name="barcode">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="barcode" class="form-label">Barcode Number</label>
+                                <input type="text" class="form-control" id="barcode" name="barcode">
+                            </div>
+
+                            <div class="col">
+                                <label for="physician" class="form-label">Physician's Name</label>
+                                <input type="text" class="form-control" id="physician" name="physician">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="physician" class="form-label">Physician's Name</label>
-                            <input type="text" class="form-control" id="physician" name="physician">
-                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="npi" class="form-label">NPI No.</label>
+                                <input type="text" class="form-control" id="npi" name="npi">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="npi" class="form-label">NPI No.</label>
-                            <input type="text" class="form-control" id="npi" name="npi">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="collectionDate" class="form-label">Collection Date</label>
-                            <input type="text" class="form-control" id="collectionDate" name="collectionDate">
+                            <div class="col">
+                                <label for="collectionDate" class="form-label">Collection Date (MM/DD/YYYY)</label>
+                                <input type="text" class="form-control" id="collectionDate" name="collectionDate">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" name="firstName">
+                            <details open>
+                                <summary>Text Suggestions</summary>
+                            </details>
                         </div>
 
                         <div class="mb-3">
                             <label for="middleName" class="form-label">Middle Name</label>
                             <input type="text" class="form-control" id="middleName" name="middleName">
+                            <details open>
+                                <summary>Text Suggestions</summary>
+                            </details>
                         </div>
 
                         <div class="mb-3">
                             <label for="lastName" class="form-label">Last Name</label>
                             <input type="text" class="form-control" id="lastName" name="lastName">
+                            <details open>
+                                <summary>Text Suggestions</summary>
+                            </details>
                         </div>
 
                         <div class="mb-3">
                             <label for="address" class="form-label">Address</label>
                             <input type="text" class="form-control" id="address" name="address">
+                            <details open>
+                                <summary>Text Suggestions</summary>
+                            </details>
                         </div>
 
                         <div class="mb-3">
                             <label for="city" class="form-label">City</label>
                             <input type="text" class="form-control" id="city" name="city">
+                            <details open>
+                                <summary>Text Suggestions</summary>
+                            </details>
                         </div>
 
                         <div class="row mb-3">
                             <div class="col">
                                 <label for="state" class="form-label">State</label>
                                 <input type="text" class="form-control" id="state" name="state">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
                             </div>
 
                             <div class="col">
                                 <label for="zip" class="form-label">ZIP Code</label>
                                 <input type="text" class="form-control" id="zip" name="zip">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="phone" class="form-label">E-mail</label>
+                            <label for="email" class="form-label">E-mail</label>
                             <input type="text" class="form-control" id="email" name="email">
+                            <details open>
+                                <summary>Text Suggestions</summary>
+                            </details>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number (XXX-XXX-XXXX)</label>
-                            <input type="text" class="form-control" id="phone" name="phone">
-                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="phone" class="form-label">Phone Number (XXX-XXX-XXXX)</label>
+                                <input type="text" class="form-control" id="phone" name="phone">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="birthDate" class="form-label">Birth Date (MM/DD/YYYY)</label>
-                            <input type="text" class="form-control" id="birthDate" name="birthDate">
+                            <div class="col">
+                                <label for="birthDate" class="form-label">Birth Date (MM/DD/YYYY)</label>
+                                <input type="text" class="form-control" id="birthDate" name="birthDate">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -165,15 +203,23 @@
                         </div>
 
                         <div id="insuranceFields" class="mb-3 p-3 border rounded">
-                            <div class="mb-3">
-                                <label for="insuranceName" class="form-label">Insurance Name</label>
-                                <input type="text" class="form-control" id="insuranceName" name="insuranceName">
-                            </div>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="insuranceName" class="form-label">Insurance Name</label>
+                                    <input type="text" class="form-control" id="insuranceName" name="insuranceName">
+                                    <details open>
+                                        <summary>Text Suggestions</summary>
+                                    </details>
+                                </div>
 
-                            <div class="mb-3">
-                                <label for="insuranceNum" class="form-label">Policy Number or Insurance
-                                    ID</label>
-                                <input type="text" class="form-control" id="insuranceNum" name="insuranceNum">
+                                <div class="col">
+                                    <label for="insuranceNum" class="form-label">Policy Number or Insurance
+                                        ID</label>
+                                    <input type="text" class="form-control" id="insuranceNum" name="insuranceNum">
+                                    <details open>
+                                        <summary>Text Suggestions</summary>
+                                    </details>
+                                </div>
                             </div>
                         </div>
 
@@ -215,7 +261,6 @@
                                        value="nausea">
                                 <label class="form-check-label" for="nausea">Nausea</label>
                             </div>
-
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" name="symptoms" id="headache"
                                        value="headache">
@@ -308,14 +353,22 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="ssn" class="form-label">Social Security Number</label>
-                            <input type="text" class="form-control" id="ssn" name="ssn">
-                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="ssn" class="form-label">Social Security Number</label>
+                                <input type="text" class="form-control" id="ssn" name="ssn">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="driverLicense" class="form-label">Driver License Number</label>
-                            <input type="text" class="form-control" id="driverLicense" name="driverLicense">
+                            <div class="col">
+                                <label for="driverLicense" class="form-label">Driver License Number</label>
+                                <input type="text" class="form-control" id="driverLicense" name="driverLicense">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Submit</button>

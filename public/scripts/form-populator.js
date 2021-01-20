@@ -1,150 +1,248 @@
+let junkWords = [
+    'valid',
+    'number',
+    'address',
+    'dob',
+    'sex',
+    'no.',
+    'undefined',
+    'collection',
+    'date',
+    'phone',
+    'signature',
+    'birth',
+    'bith',
+    'day',
+    'yes',
+    'please',
+    'driver',
+    'insurance',
+    'name',
+    'license',
+    'provide',
+    '\\sno\\s',
+    ' details',
+    'if',
+    'policys'
+]
+
+const junkRegExp = new RegExp(junkWords.join('|'), 'ig');
+
 fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
     .then(response => response.json())
     .then(response => {
-        console.log(response);
-        let textArray = response;
+        let barcode = $('#barcode');
+        let physician = $('#physician');
+        let npi = $('#npi');
         let collectDate = $('#collectionDate');
-        let numeric = [$('#npi'), collectDate, $('#zip'), $('#phone'), $('#birthDate'), $('#ssn')];
-        let alpha = [$('#physician'), $('#firstName'), $('#middleName'), $('#lastName'), $('#city'), $('#state'), $('#insuranceName')];
+        let firstName = $('#firstName');
+        let middleName = $('#middleName');
+        let lastName = $('#lastName');
+        let address = $('#address');
+        let city = $('#city');
+        let state = $('#state');
+        let zip = $('#zip');
+        let email = $('#email');
+        let phone = $('#phone');
+        let birthDate = $('#birthDate');
+        let insuranceName = $('#insuranceName');
+        let insuranceNum = $('#insuranceNum');
+        let ssn = $('#ssn');
+        let driverLicense = $('#driverLicense');
+
+        let numeric = [npi, collectDate, zip, phone, birthDate, ssn];
+        let alpha = [physician, firstName, middleName, lastName, city, state, insuranceName];
+        let shorterFields = [middleName, physician, address, city, state];
+        // let allFields = numeric.concat(barcode, address, email, insuranceNum, driverLicense, alpha);
+
+        let textArray = response;
+
+        function addSuggestion(element, text) {
+            text = text.replaceAll(junkRegExp, '');
+
+            if (numeric.includes(element)) {
+                text = text.replaceAll(/[A-Za-z,']/g, '');
+                text = text.trim();
+                if (text === '' || text.match(/[0-9]/g) == null) {
+                    return;
+                }
+            }
+
+            if (alpha.includes(element)) {
+                text = text.replaceAll(/[0-9.']/g, '');
+                text = text.trim();
+                if (text === '' || text.match(/[A-Za-z]/g) == null) {
+                    return;
+                }
+            }
+
+            if (!shorterFields.includes(element)) {
+                if (text.length < 3) {
+                    return;
+                }
+            }
+
+            let exists = false;
+
+            element.next().children().slice(1).each(function() {
+                if ($(this).text() === text) {
+                    exists = true;
+                }
+            })
+
+            if (!exists) {
+                let button = $(`<button type="button" class="btn btn-sm btn-info rounded-pill mx-1 my-2"><i class="bi bi-plus"></i>${text}</button>`);
+
+                button.click(function() {
+                    element.val(element.val() + text + ' ');
+                    $(this).hide();
+                });
+
+                element.next().append(button);
+            }
+        }
+
+        function addSuggestions(element, line) {
+            line.split(' ').forEach(function (text) {
+                addSuggestion(element, text);
+            });
+        }
+
+        function changeValIfMatch(element, lineArray, regex) {
+            lineArray.forEach(function(line) {
+                const match = line.match(regex);
+                if (match != null) {
+                    element.val(match[0]);
+                }
+            })
+        }
 
         textArray.forEach(function (line, index) {
+            let line0 = textArray[index - 1];
+            let line2 = textArray[index + 1];
+            let line3 = textArray[index + 2];
+            let line4 = textArray[index + 3];
+
             let match;
-            if (line.match(/^(CA|AA)[0-9]+/) != null) {
-                $('#barcode').val(line);
+
+            match = line.match(/^(CA|AA)[0-9]+/g);
+            if (match != null) {
+                barcode.val(match);
             }
 
             if (line.match(/Collection Date/) != null) {
-                collectDate.val(collectDate.val() + line + textArray[index + 1] + textArray[index + 2] + textArray[index + 3]);
+                addSuggestions(collectDate, line);
+                addSuggestions(collectDate, line2);
+                changeValIfMatch(collectDate, [line, line2], /[0-9]{1,2}(-|\s|.|\/)[0-9]{1,2}(-|\s|.|\/)[0-9]{2,4}/g);
             }
 
             if (line.match(/CA/) != null) {
-                $('#state').val('CA');
+                addSuggestions(state, 'CA');
             }
 
             if (line.match(/^Address/) != null) {
-                $('#firstName').val($('#firstName').val() + textArray[index + 1]);
+                addSuggestions(firstName, line2);
 
-                let addressLineSplit = textArray[index + 2].split(' ');
                 // If seemingly no middle name
-                $('#lastName').val($('#lastName').val() + " " + addressLineSplit[0] + addressLineSplit[index + 3]);
-                $('#address').val($('#address').val() + textArray[index + 1] + addressLineSplit.slice(1, -2).join(' ') + textArray[index + 3] + textArray[index - 1]);
-                $('#city').val($('#address').val() + addressLineSplit.slice(-2).join(' ') + textArray[index + 3]);
-                $('#state').val($('#state').val() + textArray[index + 3] + textArray[index + 4]);
-                $('#middleName').val($('#middleName').val() + " " + textArray[index + 2]);
+                addSuggestions(lastName, line3);
+                addSuggestions(lastName, line4);
+                addSuggestions(address, line0);
+                addSuggestions(address, line2);
+                addSuggestions(address, line3);
+                addSuggestions(address, line4);
+                addSuggestions(city, line2);
+                addSuggestions(city, line3);
+                addSuggestions(city, line4);
+                addSuggestions(state, line2);
+                addSuggestions(state, line3);
+                addSuggestions(state, line4);
+                addSuggestions(middleName, line3);
             }
 
             if (line.match(/^Name/) != null || line.match(/First/) != null) {
-                $('#firstName').val($('#firstName').val() + " " + textArray[index + 1] + textArray[index + 2]);
-                $('#lastName').val($('#lastName').val() + " " + textArray[index + 1] + textArray[index + 2]);
-                $('#address').val(textArray[index + 1] + textArray[index + 2]);
+                addSuggestions(firstName, line2);
+                addSuggestions(firstName, line3);
+                addSuggestions(lastName, line2);
+                addSuggestions(lastName, line3);
+                addSuggestions(address, line2);
+                addSuggestions(address, line3);
             }
 
             if (line.match(/\sName$/i) != null) {
-                let physician = $('#physician');
-
-                physician.val(physician.val() + textArray[index + 1]);
+                addSuggestions(physician, line2);
             }
 
             if (line.match(/@/) != null) {
-                $('#email').val(line);
+                addSuggestions(email, line);
             }
 
             match = line.match(/^[0-9]{5}$/) || line.match(/^[0-9]{5}\s/) || line.match(/\s[0-9]{5}\s/)
             if (match != null && index < textArray.length - 12) {
-                $('#zip').val(match);
-                $('#phone').val($('#phone').val() + textArray[index + 1]);
-                $('#birthDate').val($('#birthDate').val() + textArray[index + 1]);
-                match = null;
+                zip.val(match[0]);
+                addSuggestions(zip, match[0]);
+                addSuggestions(birthDate, match[0]);
             }
 
             if (line.match(/NPI/i) != null) {
-                let npi = $('#npi');
-                let physician = $('#physician');
+                addSuggestions(npi, line);
+                addSuggestions(npi, line2);
+                addSuggestions(npi, line3);
 
-                textArray.slice(0, 6).forEach((line) => {
-                    let match = line.match(/[0-9]{10}/);
+                changeValIfMatch(npi, [line, line2, line3], /[0-9]{10}/);
 
-                    if (match) {
-                        npi.val(match);
-                    }
-                })
-
-                collectDate.val(collectDate.val() + textArray[index - 1]);
-                npi.val(npi.val() + " " + textArray[index + 1].split(' ')[0] + textArray[index + 2].split(' ')[0] + textArray[index - 1]);
-                physician.val(physician.val() + textArray[index + 1] + textArray[index + 2] + textArray[index + 3]);
+                addSuggestions(collectDate, line0);
+                addSuggestions(physician, line2);
+                addSuggestions(physician, line3);
             }
 
             match = line.match(/[0-9]{10}/);
-            if (match != null && index < textArray.length - 12 && index > 4) {
-                $('#npi').val($('#npi').val() + " " + match[0]);
-                match = null;
+            if (match != null && index < 12 && index > 4) {
+                addSuggestions(npi, match[0]);
             }
 
             if (line.match(/Insurance\sName/i) != null) {
-                let insuranceName = $('#insuranceName');
-                insuranceName.val(line + textArray[index + 1]);
-                insuranceName.val(insuranceName.val().replace(/Insurance Name/i, ''));
+                addSuggestions(insuranceName, line);
+                addSuggestions(insuranceName, line2);
             }
 
             if (line.match(/Insurance\sID/i) != null) {
-                let insuranceNum = $('#insuranceNum');
-                insuranceNum.val(line);
-                insuranceNum.val(insuranceNum.val().replace(/Insurance ID/i, ''));
-                insuranceNum.val(insuranceNum.val().replace(/Policy's number or/i, ''));
+                addSuggestions(insuranceNum, line);
+                addSuggestions(insuranceNum, line2);
+                changeValIfMatch(insuranceNum, [line, line2], /[0-9]{10}/);
             }
 
             match = line.match(/[0-9]{9,10}/);
             if (match != null) {
-                $('#insuranceNum').val(match[0]);
-                match = null;
+                addSuggestions(insuranceNum, match[0]);
             }
 
             if (line.match(/SSN/i) != null) {
-                let splitLine = line.split(' ');
-                $('#ssn').val(splitLine.splice(splitLine.indexOf('SSN') + 1).join(' '));
+                addSuggestions(ssn, line);
             }
 
-            match = line.match(/[0-9]{3}-[0-9]{2}-[0-9]{4}/) || line.match(/[0-9]{3}\s[0-9]{2}\s[0-9]{4}/);
+            match = line.match(/[0-9]{3}(-|\s|.)[0-9]{2}(-|\s|.)[0-9]{4}/g);
             if (match != null) {
-                $('#ssn').val(line);
-                match = null;
+                addSuggestions(ssn, line);
+                ssn.val(match[0]);
             }
 
-            match = line.match(/[0-9]{3}-[0-9]{3}-[0-9]{4}/) || line.match(/[0-9]{3}\s[0-9]{3}\s[0-9]{4}/);
+            match = line.match(/[0-9]{3}(-|\s|.)[0-9]{3}(-|\s|.)[0-9]{4}/g);
             if (match != null) {
-                $('#phone').val(line);
-                match = null;
+                addSuggestions(phone, line);
+                phone.val(match[0]);
             }
 
-            match = line.match(/[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}/) || line.match(/[0-9]{1,2}\s[0-9]{1,2}\s[0-9]{4}/);
-            match = match || line.match(/[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}/) || line.match(/[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{2}/);
+            match = line.match(/[0-9]{1,2}[-\s.\/][0-9]{1,2}[-\s.\/][0-9]{2,4}$/g);
             if (match != null) {
-                $('#birthDate').val($('#birthDate').val() + line);
-                match = null;
+                console.log(match);
+                addSuggestions(birthDate, line);
+                birthDate.val(match[0]);
             }
 
             match = line.match(/[a-zA-Z][0-9]{7}/);
             if (match != null && index > 10) {
-                $('#driverLicense').val(match);
-                match = null;
+                addSuggestions(driverLicense, match[0]);
+                driverLicense.val(match[0]);
             }
         });
-
-        numeric.forEach((selector) => {
-            if (selector.val()) {
-                selector.val(selector.val().replaceAll(/[A-Za-z,']/ig, ''));
-            }
-        });
-
-        alpha.forEach((selector) => {
-            if (selector.val()) {
-                selector.val(selector.val().replaceAll(/[0-9.']/ig, ''));
-            }
-        });
-
-        $('input').each(function (index) {
-            $(this).val($(this).val().trim());
-            $(this).val($(this).val().replaceAll(/valid|number|address|dob|sex|no.|undefined|collection|date|phone|signature|birth|bith|day|yes|please|driver|insurance|name|license|provide|\sno\s| details|if/ig, ''));
-            $(this).val($(this).val().replaceAll(/\s\s+/g, ' '));
-        })
     });
