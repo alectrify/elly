@@ -6,6 +6,10 @@ $(document).ready(() => {
                 let newRow = $('#scanTable').append('<tr></tr>').children().last();
                 let sheetJSON = record.sheetJSON;
 
+                if (!sheetJSON.barcode) {
+                    return;
+                }
+
                 newRow.append(`<td>${sheetJSON.barcode}</td>`);
                 newRow.append(`<td>${sheetJSON.firstName} ${sheetJSON.lastName}</td>`);
 
