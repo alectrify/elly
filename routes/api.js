@@ -56,6 +56,20 @@ const upload = multer({
 });
 
 /* ---------- ROUTES ---------- */
+// GET /api/batch/:id/:batch - Get batch info
+router.get('/batch/:id/:batch', (req, res) => {
+    logCall(req.route.path);
+
+    PDFBatch.findOne({
+        id: req.params.id,
+        batchNum: parseInt(req.params.batch)
+    }, 'pageCount')
+        .then((batch) => {
+            res.json(batch);
+        })
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
 // GET /api/clear - Clear the database
 router.get('/clear', (req, res) => {
     logCall(req.route.path);
@@ -164,7 +178,7 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                                             //Removing unnecessary characters
                                             let replaced_word_text = String(word_text);
                                             replaced_word_text = replaced_word_text.replace(/[^\x20-\x7E]/g, '');
-                                            replaced_word_text = replaced_word_text.replace(/[{}%&!*:]/g, '');
+                                            replaced_word_text = replaced_word_text.replace(/[{}()%&!*:]/g, '');
                                             replaced_word_text = replaced_word_text.replace(/Signature/g, '');
 
                                             if (word.confidence > 0.5 /*&& word_text === replaced_word_text*/) {
@@ -192,7 +206,7 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                                         /*filteredPar = filteredPar.replace(/[\[{()}\]%&!:]/g, '');*/
                                         filteredPar = filteredPar.replace(/(\so\s)+/i, '');
                                         filteredPar = filteredPar.replace(/^(o\s)+/i, '');
-                                        filteredPar = filteredPar.replace(/[()]/g, '');
+                                        // filteredPar = filteredPar.replace(/[()]/g, '');
                                         filteredPar = filteredPar.replace(new RegExp(keywords.join('|'), 'i'), '');
 
                                         if (tempText.length > 1 && tempText === filteredPar) {
@@ -230,6 +244,21 @@ router.get('/pdf/:id/:batch', (req, res) => {
         .then((batch) => {
             res.set('Content-Type', 'application/pdf');
             res.send(batch.pdf);
+        })
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
+// GET /api/record/:id/:batch/:page - Get recordinfo
+router.get('/record/:id/:batch/:page', (req, res) => {
+    logCall(req.route.path);
+
+    Record.findOne({
+        id: req.params.id,
+        batchNum: parseInt(req.params.batch),
+        pageNum: parseInt(req.params.page)
+    }, 'sheetJSON')
+        .then((batch) => {
+            res.json(batch);
         })
         .catch((err) => res.status(400).json('Error: ' + err));
 });

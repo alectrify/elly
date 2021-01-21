@@ -18,12 +18,18 @@ let junkWords = [
     'driver',
     'insurance',
     'name',
+    'last',
+    'first',
+    'initial',
     'license',
     'provide',
     '\\sno\\s',
-    ' details',
+    'your',
+    'ssn',
+    'details',
     'if',
-    'policys'
+    `policy's`,
+    'npi'
 ]
 
 const junkRegExp = new RegExp(junkWords.join('|'), 'ig');
@@ -59,19 +65,20 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
 
         function addSuggestion(element, text) {
             text = text.replaceAll(junkRegExp, '');
+            text = text.replaceAll(/[,']/g, '');
 
             if (numeric.includes(element)) {
-                text = text.replaceAll(/[A-Za-z,']/g, '');
+                text = text.replaceAll(/[A-Za-z]/g, '');
                 text = text.trim();
-                if (text === '' || text.match(/[0-9]/g) == null) {
+                if (text.match(/[0-9]/g) == null) {
                     return;
                 }
             }
 
             if (alpha.includes(element)) {
-                text = text.replaceAll(/[0-9.']/g, '');
+                text = text.replaceAll(/[0-9.]/g, '');
                 text = text.trim();
-                if (text === '' || text.match(/[A-Za-z]/g) == null) {
+                if (text.match(/[A-Za-z]/g) == null) {
                     return;
                 }
             }
@@ -82,9 +89,19 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 }
             }
 
+            if (element === state) {
+                if (text.length > 2) {
+                    return;
+                }
+            }
+
+            if (text.length < 2) {
+                return;
+            }
+
             let exists = false;
 
-            element.next().children().slice(1).each(function() {
+            element.next().children().slice(1).each(function () {
                 if ($(this).text() === text) {
                     exists = true;
                 }
@@ -93,9 +110,9 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             if (!exists) {
                 let button = $(`<button type="button" class="btn btn-sm btn-info rounded-pill mx-1 my-2"><i class="bi bi-plus"></i>${text}</button>`);
 
-                button.click(function() {
+                button.click(function () {
                     element.val(element.val() + text + ' ');
-                    $(this).hide();
+                    $(`button:contains('${text}')`).hide();
                 });
 
                 element.next().append(button);
@@ -109,7 +126,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
         }
 
         function changeValIfMatch(element, lineArray, regex) {
-            lineArray.forEach(function(line) {
+            lineArray.forEach(function (line) {
                 const match = line.match(regex);
                 if (match != null) {
                     element.val(match[0]);
@@ -118,6 +135,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
         }
 
         textArray.forEach(function (line, index) {
+            let line01 = textArray[index - 2];
             let line0 = textArray[index - 1];
             let line2 = textArray[index + 1];
             let line3 = textArray[index + 2];
@@ -128,12 +146,17 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             match = line.match(/^(CA|AA)[0-9]+/g);
             if (match != null) {
                 barcode.val(match);
+                addSuggestions(physician, line2);
+                addSuggestions(npi, line2);
+                return;
             }
 
             if (line.match(/Collection Date/) != null) {
+                addSuggestions(collectDate, line01);
+                addSuggestions(collectDate, line0);
                 addSuggestions(collectDate, line);
                 addSuggestions(collectDate, line2);
-                changeValIfMatch(collectDate, [line, line2], /[0-9]{1,2}(-|\s|.|\/)[0-9]{1,2}(-|\s|.|\/)[0-9]{2,4}/g);
+                changeValIfMatch(collectDate, [line01, line0, line, line2], /[0-9]{1,2}[-\s.\/][0-9]{1,2}[-\s.\/][0-9]{2,4}/g);
             }
 
             if (line.match(/CA/) != null) {
@@ -159,16 +182,23 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 addSuggestions(middleName, line3);
             }
 
+            if (line.match(/^city/i) != null) {
+                addSuggestions(city, line2);
+            }
+
             if (line.match(/^Name/) != null || line.match(/First/) != null) {
+                addSuggestions(firstName, line);
                 addSuggestions(firstName, line2);
                 addSuggestions(firstName, line3);
+                addSuggestions(middleName, line2);
+                addSuggestions(middleName, line3);
                 addSuggestions(lastName, line2);
                 addSuggestions(lastName, line3);
                 addSuggestions(address, line2);
                 addSuggestions(address, line3);
             }
 
-            if (line.match(/\sName$/i) != null) {
+            if (line.match(/\sName$/i) != null && index < 13) {
                 addSuggestions(physician, line2);
             }
 
@@ -200,7 +230,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 addSuggestions(npi, match[0]);
             }
 
-            if (line.match(/Insurance\sName/i) != null) {
+            if (line.match(/Insurance\sName/i) != null || line.match(/Carrier's\sName/i)) {
                 addSuggestions(insuranceName, line);
                 addSuggestions(insuranceName, line2);
             }
@@ -232,17 +262,29 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 phone.val(match[0]);
             }
 
-            match = line.match(/[0-9]{1,2}[-\s.\/][0-9]{1,2}[-\s.\/][0-9]{2,4}$/g);
-            if (match != null) {
-                console.log(match);
+            match = line.match(/[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{2,4}$/g);
+            match2 = line.match(/[0-9]{4}\s*[-\s.\/1]\s*[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{1,2}$/g);
+            if (match != null || match2 != null) {
                 addSuggestions(birthDate, line);
-                birthDate.val(match[0]);
+                birthDate.val(match2 ? match2 : match);
             }
 
-            match = line.match(/[a-zA-Z][0-9]{7}/);
+            match = line.match(/[a-zA-Z]\s*[0-9]{7}/);
             if (match != null && index > 10) {
                 addSuggestions(driverLicense, match[0]);
                 driverLicense.val(match[0]);
             }
+        });
+
+        $("input[type=text]").filter(function () {
+            return $(this).val() !== '';
+        }).each(function() {
+            let text = $(this).val();
+            let textArray = text.split(' ');
+            textArray.forEach(function (str) {
+                $('button').filter(function() {
+                    return $(this).text() === str;
+                }).hide();
+            });
         });
     });
