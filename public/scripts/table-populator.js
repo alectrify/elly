@@ -6,7 +6,7 @@ $(document).ready(() => {
                 let newRow = $('#scanTable').append('<tr></tr>').children().last();
                 let sheetJSON = record.sheetJSON;
 
-                if (!sheetJSON.barcode) {
+                if (!sheetJSON.hasOwnProperty('barcode')) {
                     return;
                 }
 
