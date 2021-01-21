@@ -262,9 +262,9 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 phone.val(match[0]);
             }
 
-            match = line.match(/[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{2,4}$/g);
-            match2 = line.match(/[0-9]{4}\s*[-\s.\/1]\s*[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{1,2}$/g);
-            if (match != null || match2 != null) {
+            match = line.match(/\s+[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{2,4}$/g);
+            match2 = line.match(/\s+[0-9]{4}\s*[-\s.\/1]\s*[0-9]{1,2}\s*[-\s.\/1]\s*[0-9]{1,2}$/g);
+            if ((match != null || match2 != null)) {
                 addSuggestions(birthDate, line);
                 birthDate.val(match2 ? match2 : match);
             }
