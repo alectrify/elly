@@ -55,13 +55,13 @@
             </h1>
             <h6 class="text-center text-danger">(Page info may take a little bit longer to load for large pdf uploads)</h6>
             <div class="row">
-                <div class="col-8 pr-5">
+                <div class="col-8 col-lg-6 pr-5">
                     <div id="pdfBox">
-                        <canvas id="pdfCanvas"></canvas>
+                        <canvas id="pdfCanvas" class="enlarge"></canvas>
                     </div>
                 </div>
 
-                <div class="col-4">
+                <div class="col-4 col-lg-6">
                     <form id="editForm" method="post" action="">
                         <div class="row mb-3">
                             <div class="col">
@@ -417,7 +417,10 @@
             const pdfBoxLeft = pdfBoxRect.left;
             const pdfBoxTop = pdfBoxRect.top;
 
+            $(this).text($(this).text() === 'Toggle: Fix PDF Position' ? 'Toggle: Unfix PDF Position' : 'Toggle: Fix PDF Position');
+
             pdfBox.toggleClass('position-fixed');
+            pdfBox.toggleClass('enlarge');
             pdfBox.css('top', pdfBoxTop);
             pdfBox.css('left', pdfBoxLeft);
 
