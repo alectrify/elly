@@ -14,7 +14,7 @@ const EXCEL_MIMETYPES = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-excel'
 ];
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://admin:1234elly@cluster0.81swg.mongodb.net/<dbname>?retryWrites=true&w=majority';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://admin:1234elly@cluster0.81swg.mongodb.net/elly?retryWrites=true&w=majority';
 const PDF_BATCH_CAPACITY = 5;
 const PDF_MIMETYPE = 'application/pdf';
 const router = express.Router();
