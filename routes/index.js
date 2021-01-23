@@ -21,5 +21,9 @@ router.get('/records', (req, res) => {
     res.render('../views/records.ejs');
 });
 
+router.get("/database", (req, res) => {
+    res.render("../views/database.ejs");
+});
+
 /* ---------- EXPORT ---------- */
 module.exports = router;
