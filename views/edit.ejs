@@ -49,12 +49,33 @@
 
 <main>
     <section class="pt-4">
-        <div class="container-fluid pt-4 px-4">
+        <div class="container-fluid px-4">
+            <div class="row mb-3">
+                <h1 class="text-secondary">Switch Pages</h1>
+                <h2 class="text-info">Batch <span id="batchDisplay"></span></h2>
+                <div id="pagination">
+
+                </div>
+                <div id="controls" class="mt-4">
+                    <button id="prev" class="btn btn-secondary" type="button">
+                        <i class="bi bi-arrow-left"></i>
+                        Previous Batch
+                    </button>
+                    <button id="next" class="btn btn-secondary" type="button">
+                        Next Batch
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <hr>
+
             <h1 class="text-primary text-center">
                 Edit Your Scan Information
             </h1>
             <h6 class="text-center text-danger">(Page info may take a little bit longer to load for large pdf uploads)</h6>
-            <div class="row">
+
+            <div class="row mt-3">
                 <div class="col-8 col-lg-6 pr-5">
                     <div id="pdfBox">
                         <canvas id="pdfCanvas" class="enlarge"></canvas>
@@ -386,48 +407,10 @@
 <!-- Bundle: Bootstrap, jQuery -->
 <script src="../../../scripts/bundle.js"></script>
 
-<!-- PDF Worker -->
-
 <!-- Custom JavaScript -->
-<script>
-    const urlSections = window.location.pathname.split('/');
-    const id = urlSections[urlSections.length - 3];
-    const batchNum = urlSections[urlSections.length - 2];
-    const pageNum = urlSections[urlSections.length - 1];
-
-    $('#editForm').attr('action', `/api/submit/${id}/${batchNum}/${pageNum}`);
-
-    const hasInsurance = $('#hasInsurance');
-    const insuranceFields = $('#insuranceFields');
-    const pdfBox = $('#pdfCanvas');
-
-    $(document).ready(function () {
-        hasInsurance.click(function () {
-            if ($(this).is(':checked')) {
-                insuranceFields.show();
-            } else {
-                insuranceFields.hide();
-                $('#insuranceNum').val('');
-                $('#insuranceName').val('');
-            }
-        });
-
-        $('#fixPDF').click(function () {
-            const pdfBoxRect = document.getElementById('pdfBox').getBoundingClientRect();
-            const pdfBoxLeft = pdfBoxRect.left;
-            const pdfBoxTop = pdfBoxRect.top;
-
-            $(this).text($(this).text() === 'Toggle: Fix PDF Position' ? 'Toggle: Unfix PDF Position' : 'Toggle: Fix PDF Position');
-
-            pdfBox.toggleClass('position-fixed');
-            pdfBox.toggleClass('enlarge');
-            pdfBox.css('top', pdfBoxTop);
-            pdfBox.css('left', pdfBoxLeft);
-
-        });
-    });
-</script>
-<script src="../../../scripts/render-pdf.js"></script>
+<script src="../../../scripts/page-init.js"></script>
+<script src="../../../scripts/pagination.js"></script>
 <script src="../../../scripts/form-populator.js"></script>
+<script src="../../../scripts/render-pdf.js"></script>
 </body>
 </html>
