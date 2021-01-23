@@ -256,18 +256,18 @@ router.get('/record/:id/:batch/:page', (req, res) => {
         id: req.params.id,
         batchNum: parseInt(req.params.batch),
         pageNum: parseInt(req.params.page)
-    }, 'sheetJSON')
+    }, 'patientData')
         .then((batch) => {
             res.json(batch);
         })
         .catch((err) => res.status(400).json('Error: ' + err));
 });
 
-// GET /api/records - Send JSON response of sheetJSON's for records
+// GET /api/records - Send JSON response of patientData's for records
 router.get('/records', (req, res) => {
     logCall(req.route.path);
 
-    Record.find({}, 'sheetJSON')
+    Record.find({}, 'patientData')
         .then((records) => res.json(records))
         .catch((err) => res.status(400).json('Error: ' + err));
 });
@@ -285,9 +285,24 @@ router.post('/submit/:id/:batch/:page', (req, res) => {
         id: id,
         batchNum: batch,
         pageNum: page
-    }, 'sheetJSON')
+    }, 'patientData')
         .then((record) => {
-            record.sheetJSON = req.body;
+            const today = new Date();
+
+            record.patientData = req.body;
+            record.reportData = {
+                patientID: req.body.barcode,
+                clientGroup: '',
+                labID: '',
+                name: `${req.body.firstName} ${req.body.middleName} ${req.body.lastName}`,
+                receivedDate: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
+                result: '',
+                testDate: req.body.collectionDate,
+                ACI: '',
+                paymentRequestDate: '',
+                paymentReceivedAmount: '',
+                paymentReceivedDate: ''
+            }
             record.save();
         })
         .catch((err) => res.status(400).json('Error: ' + err));
@@ -320,10 +335,10 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
     if (EXCEL_MIMETYPES.includes(req.file.mimetype)) {
         const workbook = XLSX.readFile(req.file.path);
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const sheetJSON = XLSX.utils.sheet_to_json(worksheet);
+        const patientData = XLSX.utils.sheet_to_json(worksheet);
 
         Record.create({
-            sheetJSON: sheetJSON[0]
+            patientData: patientData[0]
         }).then(() => {
             fs.unlink(req.file.path, (err) => {
                 if (err) throw err;
@@ -378,17 +393,18 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
 router.get('/xlsx/:id', (req, res) => {
     logCall(req.route.path);
 
-    Record.findById(req.params.id, 'sheetJSON')
+    Record.findById(req.params.id, 'patientData reportData')
         .then((record) => {
             const workbook = XLSX.utils.book_new();
-            const worksheet = XLSX.utils.json_to_sheet([record.sheetJSON]);
+            const worksheet = XLSX.utils.json_to_sheet([Object.assign(record.patientData, record.reportData)]);
             XLSX.utils.book_append_sheet(workbook, worksheet, 'Result');
 
             const workbookBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'buffer'});
-            const barcode = record.sheetJSON.barcode;
+            const barcode = record.patientData.barcode;
 
             res.set({
-                'Content-Disposition': `attachment; filename=${barcode}.xlsx`
+                'Content-Disposition': `attachment; filename=${barcode}.xlsx`,
+                'Content-Type': 'application/octet-stream'
             });
             res.send(workbookBuffer);
         })

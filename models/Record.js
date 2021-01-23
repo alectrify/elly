@@ -5,7 +5,8 @@ const recordSchema = new mongoose.Schema({
     batchNum: Number,
     pageNum: Number,
     ocrResults: [String],
-    sheetJSON: {}
+    patientData: {},
+    reportData: {}
 });
 
 module.exports = mongoose.model('Record', recordSchema);
