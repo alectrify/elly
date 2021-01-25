@@ -35,4 +35,10 @@ $(document).ready(function () {
         pdfBox.css('left', pdfBoxLeft);
 
     });
+
+    $('form').submit(function () {
+        $( "input[type=text]" ).val(function( index, value ) {
+            return value.trim();
+        });
+    });
 });

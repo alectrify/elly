@@ -328,6 +328,7 @@ router.post('/submit/:id/:batch/:page', (req, res) => {
     const id = mongoose.Types.ObjectId(req.params.id);
     const batch = parseInt(req.params.batch);
     const page = parseInt(req.params.page);
+    console.log(req.body);
 
     // Update record with editing info
     Record.findOne({
@@ -343,7 +344,7 @@ router.post('/submit/:id/:batch/:page', (req, res) => {
                 patientID: req.body.barcode,
                 clientGroup: '',
                 labID: '',
-                name: `${req.body.firstName}${' ' + req.body.middleName} ${req.body.lastName}`,
+                name: `${req.body.firstName} ${req.body.lastName}`,
                 receivedDate: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
                 result: '',
                 testDate: req.body.collectionDate,
