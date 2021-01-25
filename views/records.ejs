@@ -33,16 +33,13 @@
                 </a>
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="/">Home</a>
+                        <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Records</a>
+                        <a class="nav-link active" aria-current="page" href="#">Records</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/database">Database</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/photo_scan">Photo Scan</a>
+                        <a class="nav-link" href="/photo-scan">Photo Scan</a>
                     </li>
                 </ul>
             </div>
@@ -52,7 +49,7 @@
 
 <main class="min-vh-100 mt-5">
     <section>
-        <div class="container">
+        <div class="container-fluid">
 
             <h1 class="text-primary mb-5">
                 Records
@@ -73,19 +70,34 @@
                     <th scope="col">Payment Date</th>
                 </tr>
                 -->
-            <a class="btn btn-danger me-3 mr-3" href="/api/clear">Clear Records</a>
-            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#uploadModal">
-                Upload File
+            <a class="btn btn-danger me-3" href="/api/clear">
+                <i class="bi bi-backspace"></i>
+                Clear Records
+            </a>
+            <button type="button" class="btn btn-success me-3" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <i class="bi bi-upload"></i> Upload File
             </button>
-            <button type = "button" class = "btn btn-info text-white mr-4 " id = "downloadAll">Download All</button>
+            <a class="btn btn-info text-white me-3" href="/api/xlsx"><i class="bi bi-download"></i> Download All Records (XLSX)</a>
 
-            <table class="table table-striped mt-4">
+            <table class="table table-striped table-bordered mt-4">
                 <thead>
                 <tr class="mt-4 pt-5">
-                    <th scope="col">Barcode</th>
+                    <!--<th scope="col">Barcode</th>
                     <th scope="col">Name</th>
                     <th scope="col">Download</th>
-                    <th scope="col">Delete</th>
+                    <th scope="col">Delete</th>-->
+                    <th scope="col">Patient ID</th>
+                    <th scope="col">Client Group</th>
+                    <th scope="col">Lab ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Submitted</th>
+                    <th scope="col">N/P/In-V/Re-test</th>
+                    <th scope="col">Test Date</th>
+                    <th scope="col">A/C/I</th>
+                    <th scope="col">Payment Requested Date</th>
+                    <th scope="col">Payment Received Amount</th>
+                    <th scope="col">Payment Received Date</th>
+                    <th scope="col">Actions</th>
                 </tr>
                 </thead>
                 <tbody id="scanTable">
@@ -125,16 +137,38 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="/api/upload" method="post" enctype="multipart/form-data">
+                <form id="uploadForm" action="/api/upload" method="post" enctype="multipart/form-data">
 
                     <div class="mb-3 mt-3">
                         <label for="formFile" class="form-label">Upload your form (.pdf, .xlsx, .xls)</label>
                         <input class="form-control" type="file" id="uploadFile" name="uploadFile">
                     </div>
-                    <button class="btn btn-primary" type="submit">Upload</button>
                 </form>
             </div>
             <div class="modal-footer">
+                <button class="btn btn-primary" form="uploadForm" type="submit">Upload</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Record Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" action="" method="post">
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" form="editForm" type="submit">Submit</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -145,6 +179,8 @@
 <script src="scripts/bundle.js"></script>
 
 <!-- Custom JavaScript -->
+<script src="scripts/records-page-init.js"></script>
 <script src="scripts/table-populator.js"></script>
+<script src="scripts/edit-modal-populator.js"></script>
 </body>
 </html>

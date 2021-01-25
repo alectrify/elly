@@ -2,8 +2,8 @@ const mongoose = require('mongoose');
 
 const recordSchema = new mongoose.Schema({
     id: mongoose.Schema.Types.ObjectId,
-    batchNum: Number,
-    pageNum: Number,
+    batchNum: Number, // Range: [0, Infinity]
+    pageNum: Number, // Range: [1, 5]
     ocrResults: [String],
     patientData: {},
     reportData: {}

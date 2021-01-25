@@ -3,14 +3,15 @@ const id = urlSections[urlSections.length - 3];
 const batchNum = urlSections[urlSections.length - 2];
 const pageNum = urlSections[urlSections.length - 1];
 
-$('#batchDisplay').text(`${parseInt(batchNum)}`);
-$('#editForm').attr('action', `/api/submit/${id}/${batchNum}/${pageNum}`);
-
 const hasInsurance = $('#hasInsurance');
 const insuranceFields = $('#insuranceFields');
 const pdfBox = $('#pdfCanvas');
 
 $(document).ready(function () {
+    $('#batchDisplay').text(`${parseInt(batchNum)}`);
+    $('#editForm').attr('action', `/api/submit/${id}/${batchNum}/${pageNum}`);
+    $('input').css('background-color', '#fff3cd');
+
     hasInsurance.click(function () {
         if ($(this).is(':checked')) {
             insuranceFields.show();

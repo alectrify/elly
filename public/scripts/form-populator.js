@@ -280,6 +280,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             return $(this).val() !== '';
         }).each(function() {
             let text = $(this).val();
+            $(this).val(text.trim());
             let textArray = text.split(' ');
             textArray.forEach(function (str) {
                 $('button').filter(function() {

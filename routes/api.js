@@ -97,6 +97,20 @@ router.get('/delete/:id', (req, res) => {
         .catch((err) => res.status(400).json('Error: ' + err));
 });
 
+// POST /api/edit/:id - Edit a record by id
+router.post('/edit/:id', (req, res) => {
+    logCall(req.route.path);
+
+    Record.findById(req.params.id)
+        .then((record) => {
+            record.reportData = req.body;
+            record.save();
+
+            res.redirect('/records');
+        })
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
 // GET /api/ocr/:id/:batch/:page - Get OCR data on a requested page
 router.get('/ocr/:id/:batch/:page', (req, res) => {
     logCall(req.route.path);
@@ -248,7 +262,42 @@ router.get('/pdf/:id/:batch', (req, res) => {
         .catch((err) => res.status(400).json('Error: ' + err));
 });
 
-// GET /api/record/:id/:batch/:page - Get recordinfo
+// GET /api/pdf/:id/:batch/:page - Get a PDF of a requested page
+router.get('/pdf/:id/:batch/:page', (req, res) => {
+    logCall(req.route.path);
+
+    const pageNum = parseInt(req.params.page);
+
+    PDFBatch.findOne({
+        id: req.params.id,
+        batchNum: parseInt(req.params.batch)
+    }, 'pdf')
+        .then(async (batch) => {
+            const srcDoc = await PDFDocument.load(batch.pdf);
+            const thisDoc = await PDFDocument.create();
+            const [page] = await thisDoc.copyPages(srcDoc, [pageNum - 1]);
+            thisDoc.addPage(page);
+
+            const pdfBytes = await thisDoc.save();
+
+            res.set('Content-Type', 'application/pdf');
+            res.send(Buffer.from(pdfBytes));
+        })
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
+// GET /api/record/:id/:batch/:page - Get record info
+router.get('/record/:id', (req, res) => {
+    logCall(req.route.path);
+
+    Record.findById(req.params.id, 'reportData')
+        .then((record) => {
+            res.json(record);
+        })
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
+// GET /api/record/:id/:batch/:page - Get record info
 router.get('/record/:id/:batch/:page', (req, res) => {
     logCall(req.route.path);
 
@@ -267,7 +316,7 @@ router.get('/record/:id/:batch/:page', (req, res) => {
 router.get('/records', (req, res) => {
     logCall(req.route.path);
 
-    Record.find({}, 'patientData')
+    Record.find({}, 'batchNum id pageNum patientData reportData')
         .then((records) => res.json(records))
         .catch((err) => res.status(400).json('Error: ' + err));
 });
@@ -294,7 +343,7 @@ router.post('/submit/:id/:batch/:page', (req, res) => {
                 patientID: req.body.barcode,
                 clientGroup: '',
                 labID: '',
-                name: `${req.body.firstName} ${req.body.middleName} ${req.body.lastName}`,
+                name: `${req.body.firstName}${' ' + req.body.middleName} ${req.body.lastName}`,
                 receivedDate: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
                 result: '',
                 testDate: req.body.collectionDate,
@@ -335,10 +384,27 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
     if (EXCEL_MIMETYPES.includes(req.file.mimetype)) {
         const workbook = XLSX.readFile(req.file.path);
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const patientData = XLSX.utils.sheet_to_json(worksheet);
+        const data = XLSX.utils.sheet_to_json(worksheet)[0];
+        let patientData = {};
+        let reportData = {};
+        let patientDataPopulated = false;
+
+        for (const [key, value] of Object.entries(data)) {
+            if (!patientDataPopulated) {
+                patientData[key] = value;
+            }
+            else {
+                reportData[key] = value;
+            }
+
+            if (key === 'driverLicense') {
+                patientDataPopulated = true;
+            }
+        }
 
         Record.create({
-            patientData: patientData[0]
+            patientData: patientData,
+            reportData: reportData
         }).then(() => {
             fs.unlink(req.file.path, (err) => {
                 if (err) throw err;
@@ -389,7 +455,40 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
     }
 });
 
-// GET /api/xlsx/:id/ - Send a spreadsheet for a record
+// GET /api/records - Send JSON response of patientData's for records
+router.get('/records', (req, res) => {
+    logCall(req.route.path);
+
+    Record.find({}, 'batchNum id pageNum patientData reportData')
+        .then((records) => res.json(records))
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
+// GET /api/xlsx - Get a spreadsheet of all records
+router.get('/xlsx', (req, res) => {
+    logCall(req.route.path);
+
+    Record.find({}, 'patientData reportData')
+        .then((records) => {
+            const workbook = XLSX.utils.book_new();
+            let worksheet = XLSX.utils.json_to_sheet(
+                records.map(record => Object.assign(record.patientData, record.reportData))
+            );
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Result');
+
+            const workbookBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'buffer'});
+
+            res.set({
+                'Content-Disposition': `attachment; filename=records.xlsx`,
+                'Content-Type': 'application/octet-stream'
+            });
+            res.send(workbookBuffer);
+        })
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
+// GET /api/xlsx/:id - Send a spreadsheet for a record
 router.get('/xlsx/:id', (req, res) => {
     logCall(req.route.path);
 

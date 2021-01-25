@@ -17,16 +17,12 @@ router.get('/edit/:id/:batch/:page', (req, res) => {
     res.render('../views/edit.ejs');
 });
 
+router.get("/photo-scan", (req, res) => {
+    res.render("../views/photo-scan.ejs");
+});
+
 router.get('/records', (req, res) => {
     res.render('../views/records.ejs');
-});
-
-router.get("/database", (req, res) => {
-    res.render("../views/database.ejs");
-});
-
-router.get("/photo_scan", (req, res) => {
-    res.render("../views/photo_scan.ejs");
 });
 
 /* ---------- EXPORT ---------- */
