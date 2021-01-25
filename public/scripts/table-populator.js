@@ -31,8 +31,10 @@ $(document).ready(() => {
                     dropdownMenu.append(`<li><a class="dropdown-item text-info" href="/api/xlsx/${record._id}">
                             <i class="bi bi-file-excel"></i> Download XLSX</a></li>`);
 
-                    dropdownMenu.append(`<li><a class="dropdown-item text-info" href="/api/pdf/${record.id}/${record.batchNum}/${record.pageNum}">
+                    if (record.hasOwnProperty('pageNum')) {
+                        dropdownMenu.append(`<li><a class="dropdown-item text-info" href="/api/pdf/${record.id}/${record.batchNum}/${record.pageNum}">
                             <i class="bi bi-file-richtext"></i> Download PDF</a></li>`);
+                    }
 
                     dropdownMenu.append(`<li><a class="dropdown-item text-danger" href="/api/delete/${record._id}">
                         <i class="bi bi-trash"></i> Delete</a></li>`);
