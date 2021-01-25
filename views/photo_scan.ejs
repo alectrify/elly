@@ -8,6 +8,10 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
+     <!-- Font Awesome Icons -->
+     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.1/css/all.css"
+     integrity="sha384-O8whS3fhG2OnA5Kas0Y9l3cfpmYjapjI0E4theH4iuMD+pLhbf6JI0jIMfYcK3yZ" crossorigin="anonymous">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="styles/bootstrap.css">
 
@@ -42,7 +46,7 @@
                         <a class="nav-link" href="/database">Database</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/photo_scan">Photo Scan</a>
+                        <a class="nav-link" href="#">Photo Scan</a>
                     </li>
                 </ul>
             </div>
@@ -60,13 +64,13 @@
 
             <div class="row mt-5">
                 <div class="col-md-8 offset-md-2">
-                    <form action="/api/upload" method="post" enctype="multipart/form-data">
-                        <div class="mb-3 mt-3">
-                            <label for="formFile" class="form-label">Upload your form (.pdf, .xlsx, .xls)</label>
-                            <input class="form-control" type="file" id="uploadFile" name="uploadFile">
-                        </div>
-                        <button class="btn btn-primary" type="submit">Upload</button>
-                    </form>
+                    <video id="webcam" autoplay playsinline width="640" height="480"></video>
+                    <canvas id="canvas" class="d-none"></canvas>
+                    <audio id="snapSound" src="audio/snap.wav" preload = "auto"></audio>
+
+                    <button class = "btn btn-info text-white " id = "camera_btn"><i class="fas fa-camera"></i></button>
+
+                    <button class = "btn btn-primary text-white" id = "flip_btn"><i class="fas fa-toggle-on"></i></button>
                 </div>
             </div>
         </div>
@@ -95,6 +99,9 @@
 <!-- Bundle: Bootstrap, jQuery -->
 <script src="scripts/bundle.js"></script>
 
+<script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
+
 <!-- Custom JavaScript -->
+<script type = "text/javascript" src = "scripts/take_photo.js"></script>
 </body>
 </html>

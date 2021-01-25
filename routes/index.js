@@ -25,5 +25,9 @@ router.get("/database", (req, res) => {
     res.render("../views/database.ejs");
 });
 
+router.get("/photo_scan", (req, res) => {
+    res.render("../views/photo_scan.ejs");
+});
+
 /* ---------- EXPORT ---------- */
 module.exports = router;
