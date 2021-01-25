@@ -4,14 +4,14 @@ $(document).ready(() => {
         .then((records) => {
             records.forEach(record => {
                 let newRow = $('#scanTable').append('<tr></tr>').children().last();
-                let sheetJSON = record.sheetJSON;
+                let patientData = record.patientData;
 
-                if (typeof sheetJSON !== 'object' || sheetJSON === null || !sheetJSON.hasOwnProperty('barcode')) {
+                if (typeof patientData !== 'object' || patientData === null || !patientData.hasOwnProperty('barcode')) {
                     return;
                 }
 
-                newRow.append(`<td>${sheetJSON.barcode}</td>`);
-                newRow.append(`<td>${sheetJSON.firstName} ${sheetJSON.lastName}</td>`);
+                newRow.append(`<td>${patientData.barcode}</td>`);
+                newRow.append(`<td>${patientData.firstName} ${patientData.lastName}</td>`);
 
                 // Create download button
                 newRow.append(`<td><a class="btn btn-info" href="/api/xlsx/${record._id}">

@@ -5,7 +5,7 @@ $(document).ready(() => {
 
         fetch(`/api/batch/${id}/${newBatchNum}`)
             .then((response) => response.json())
-            .then((batch) => {
+            .then(async (batch) => {
                 if (!batch) {
                     return;
                 }
@@ -17,14 +17,14 @@ $(document).ready(() => {
                 pagination.empty();
 
                 for (let i = 1; i <= pageCount; i++) {
-                    fetch(`/api/record/${id}/${newBatchNum}/${i}`)
+                    await fetch(`/api/record/${id}/${newBatchNum}/${i}`)
                         .then((response) => response.json())
                         .then((batch) => {
                             let tooltip = '';
                             let color = i === parseInt(pageNum) ? 'info' : 'primary';
-                            if (batch && batch.hasOwnProperty('sheetJSON')) {
-                                const sheetJSON = batch.sheetJSON;
-                                tooltip = ` - ${sheetJSON.barcode}: ${sheetJSON.firstName} ${sheetJSON.lastName}`;
+                            if (batch && batch.hasOwnProperty('patientData')) {
+                                const patientData = batch.patientData;
+                                tooltip = ` - ${patientData.barcode}: ${patientData.firstName} ${patientData.lastName}`;
 
                                 color = i === parseInt(pageNum) ? 'info' : 'success';
                             }

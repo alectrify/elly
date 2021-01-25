@@ -34,11 +34,11 @@ body {
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
     .enlarge {
-        height: 70vh;
+        height: 80vh;
     }
 
     .position-fixed {
-        height: 70vh;
+        height: 80vh;
     }
 }
 
