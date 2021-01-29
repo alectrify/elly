@@ -329,7 +329,6 @@ router.post('/submit/:id/:batch/:page', (req, res) => {
     const id = mongoose.Types.ObjectId(req.params.id);
     const batch = parseInt(req.params.batch);
     const page = parseInt(req.params.page);
-    console.log(req.body);
 
     // Update record with editing info
     Record.findOne({
