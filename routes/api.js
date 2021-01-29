@@ -5,6 +5,7 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const PDFDocument = require('pdf-lib').PDFDocument;
+const sharp = require('sharp');
 const vision = require('@google-cloud/vision');
 const XLSX = require('xlsx');
 
@@ -47,7 +48,7 @@ const PDFBatch = require('../models/PDFBatch');
 const upload = multer({
     dest: 'temp/',
     fileFilter: (req, file, cb) => {
-        if (file.originalname.match(/.(pdf|xls|xlsx)$/)) {
+        if (file.originalname.match(/.(jpeg|jpg|png|pdf|xls|xlsx)$/i)) {
             cb(undefined, true);
         } else {
             throw new Error('Invalid file format: must be .pdf, .xls, or .xlsx');
@@ -393,8 +394,7 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
         for (const [key, value] of Object.entries(data)) {
             if (!patientDataPopulated) {
                 patientData[key] = value;
-            }
-            else {
+            } else {
                 reportData[key] = value;
             }
 
@@ -413,6 +413,110 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
 
             res.redirect('/records');
         }).catch((err) => res.status(400).json('Error: ' + err));
+
+    } else if (req.file.mimetype.includes('image')) {
+        console.log('< Running Vision API');
+        const [result] = await client.documentTextDetection(req.file.path);
+        console.log('> Finished Running Vision API');
+        const fullTextAnnotation = result.fullTextAnnotation;
+        let textArray = [];
+        fullTextAnnotation.pages.forEach(page => {
+            page.blocks.forEach(block => {
+                // console.log(`Block confidence: ${block.confidence}`);
+                block.paragraphs.forEach(paragraph => {
+                    let paraText = [];
+                    paragraph.words.forEach(word => {
+                        const wordText = word.symbols.map(s => s.text).join('');
+
+                        /*if (word.confidence > 0.5) {
+                            paraText.push(wordText);
+                        }*/
+
+                        //Removing unnecessary characters
+                        let replaced_word_text = String(wordText);
+                        replaced_word_text = replaced_word_text.replace(/[^\x20-\x7E]/g, '');
+                        replaced_word_text = replaced_word_text.replace(/Signed by/g, '');
+                        replaced_word_text = replaced_word_text.replace(/X/g, '');
+
+                        if (word.confidence > 0.5 && replaced_word_text.length > 0) {
+                            paraText.push(replaced_word_text);
+                        }
+                    });
+
+                    const keywords = [
+                        'symptoms',
+                        'ownership',
+                        'wife',
+                        'child',
+                        'other',
+                        'male',
+                        'sex',
+                        'consent',
+                        'www.sierrabiolab.com',
+                        'passport',
+                        'american',
+                        'uninsured',
+                        'contact',
+                        'and zip',
+                        'ethnicity',
+                        'race',
+                        'cough',
+                        'chills',
+                        'fatigue',
+                        'headache',
+                        'diarrhea'
+                    ];
+
+                    let filteredPar = paraText.join(' ');
+                    /*filteredPar = filteredPar.replace(/[\[{()}\]%&!:]/g, '');*/
+                    // filteredPar = filteredPar.replace(/[()]/g, '');
+                    filteredPar = filteredPar.replace(new RegExp(keywords.join('|'), 'i'), '');
+
+                    if (filteredPar.length > 1 && paraText.join(' ') === filteredPar) {
+                        textArray.push(filteredPar);
+                    }
+                    // textArray.push(paraText.join(' '));
+                });
+            });
+        });
+
+        textArray.push('newForm');
+
+        const modelID = new mongoose.Types.ObjectId();
+        const pdfDoc = await PDFDocument.create();
+        const page = pdfDoc.addPage();
+
+        const originalImg = fs.readFileSync(req.file.path);
+        const pngImg = await sharp(originalImg).jpeg().greyscale().toBuffer();
+        const embed = await pdfDoc.embedJpg(pngImg);
+        const scaled = embed.scaleToFit(page.getWidth(), page.getHeight());
+
+        page.drawImage(embed, {
+            width: scaled.width,
+            height: scaled.height
+        });
+
+        const pdfBytes = await pdfDoc.save();
+
+        await PDFBatch.create({
+            id: modelID,
+            batchNum: 0,
+            pageCount: 1,
+            pdf: Buffer.from(pdfBytes)
+        });
+
+        await Record.create({
+            id: modelID,
+            batchNum: 0,
+            pageNum: 1,
+            ocrResults: textArray
+        });
+
+        fs.unlink(req.file.path, (err) => {
+            if (err) throw err;
+        });
+
+        res.redirect(`/edit/${modelID}/0/1`);
 
     } else if (req.file.mimetype === PDF_MIMETYPE) {
         const pdf = fs.readFileSync(req.file.path);

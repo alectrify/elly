@@ -29,7 +29,8 @@ let junkWords = [
     'details',
     'if',
     `policy's`,
-    'npi'
+    'npi',
+    'middle'
 ]
 
 const junkRegExp = new RegExp(junkWords.join('|'), 'ig');

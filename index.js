@@ -10,6 +10,7 @@ const port = process.env.PORT || 3000;
 
 /* ---------- INITIALIZATION ---------- */
 /* ----- EXPRESS ----- */
+// url path begins at /public
 app.use(express.static(path.join(__dirname, 'public')));
 
 // parse application/json
@@ -28,9 +29,9 @@ fs.readdir(tempPath, (err, fileNames) => {
 
     fileNames.forEach((fileName) => {
         fs.unlink(path.join('temp', fileName), (err) => {
-           if (err) throw err;
+            if (err) throw err;
 
-           console.log(`temp/${fileName} was deleted`);
+            console.log(`temp/${fileName} was deleted`);
         });
     });
 });
