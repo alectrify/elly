@@ -59,6 +59,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
         let insuranceNum = $('#insuranceNum');
         let ssn = $('#ssn');
         let driverLicense = $('#driverLicense');
+        let passport = $('#passport');
 
         let numeric = [npi, collectDate, zip, phone, birthDate, ssn];
         let alpha = [physician, firstName, middleName, lastName, city, state, insuranceName];
@@ -239,6 +240,10 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
 
                 else if (line.match(/NPI/) != null) {
                     npi.val(line2.replace(/\s/g, ''));
+                }
+
+                else if (line.match(/Passport/) != null) {
+                    passport.val(line2.replace(/\s/g, ''));
                 }
             });
         }

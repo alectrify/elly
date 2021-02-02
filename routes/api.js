@@ -347,6 +347,7 @@ router.post('/submit/:id/:batch/:page', (req, res) => {
                 name: `${req.body.firstName} ${req.body.lastName}`,
                 receivedDate: `${today.getMonth() + 1}/${today.getDate()}/${today.getFullYear()}`,
                 result: '',
+                sampleType: '',
                 testDate: req.body.collectionDate,
                 ACI: '',
                 paymentRequestDate: '',
