@@ -10,6 +10,7 @@ const pdfBox = $('#pdfCanvas');
 $(document).ready(function () {
     $('#batchDisplay').text(`${parseInt(batchNum)}`);
     $('#editForm').attr('action', `/api/submit/${id}/${batchNum}/${pageNum}`);
+    $('#openPDF').attr('href', `/api/pdf/${id}/${batchNum}/${pageNum}`);
     $('input[type=text]').css('background-color', '#fff3cd');
 
     hasInsurance.click(function () {
