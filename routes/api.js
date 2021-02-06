@@ -764,6 +764,68 @@ router.get('/xlsx', (req, res) => {
         .catch((err) => res.status(400).json('Error: ' + err));
 });
 
+router.post('/xlsxRange', (req, res) => {
+    logCall(req.route.path);
+
+    let date1 = req.body.date1.split("-");
+    let date2 = req.body.date2.split("-");
+    
+    //Improve algorithm later (finding specific date)
+    let numDays1 = (parseInt(date1[1]) * 30) + parseInt(date1[2]);
+    let numDays2 = (parseInt(date2[1]) * 30) + parseInt(date2[2]);
+    console.log(numDays1);
+    console.log(numDays2);
+    
+
+    Record.find({}, 'patientData reportData')
+        .then((records) => {
+            records = records.filter((record) => {
+                return !!record.reportData;
+            });
+
+            //Filtering based on the date
+            records = records.filter((record) => {
+                //Two different arrays to for different formatting
+                let recordDaysArr1 = record.reportData.testDate.split("/");
+                let recordDaysArr2 = record.reportData.testDate.split('-');
+                let recordDays1 = parseInt(recordDaysArr1[0])*30 + parseInt(recordDaysArr1[1]);
+                let recordDays2 = parseInt(recordDaysArr2[1])*30 + parseInt(recordDaysArr2[2]);
+
+                console.log("Record 1:" + recordDays1);
+                console.log("Record 2:"  + recordDays2);
+                
+                if(!isNaN(recordDays1)){
+
+                    if(recordDays1 >= numDays1 && recordDays1 <= numDays2){
+                        return record;
+                    } 
+                }  
+
+                if(!isNaN(recordDays2)){
+                    if(recordDays2 >= numDays1 && recordDays2 <= numDays2){
+                        return record;
+                    } 
+                }  
+            });
+
+            const workbook = XLSX.utils.book_new();
+            let worksheet = XLSX.utils.json_to_sheet(
+                records.map(record => Object.assign(record.patientData, record.reportData))
+            );
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Result');
+
+            const workbookBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'buffer'});
+
+            res.set({
+                'Content-Disposition': `attachment; filename=records.xlsx`,
+                'Content-Type': 'application/octet-stream'
+            });
+            res.send(workbookBuffer);
+        })
+        .catch((err) => res.status(400).json('Error: ' + err));
+});
+
 // GET /api/xlsx/:id - Send a spreadsheet for a record
 router.get('/xlsx/:id', (req, res) => {
     logCall(req.route.path);
@@ -781,6 +843,7 @@ router.get('/xlsx/:id', (req, res) => {
                 'Content-Disposition': `attachment; filename=${barcode}.xlsx`,
                 'Content-Type': 'application/octet-stream'
             });
+
             res.send(workbookBuffer);
         })
         .catch((err) => res.status(400).json('Error: ' + err));
