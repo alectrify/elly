@@ -2,7 +2,21 @@ $(document).ready(() => {
     fetch('/api/records')
         .then((response) => response.json())
         .then((records) => {
-            records.forEach((record) => {
+            let pageCount = records.length / MAX_ROWS;
+
+            // Pagination
+            for (let i = 1; i <= pageCount; i++) {
+                $(`<li class="page-item ${(i === pageNum) ? 'active' : ''}"><a class="page-link" href="/records/${i}">${i}</a></li>\n`).insertBefore('.next');
+            }
+
+            let clientIdCounts = {};
+
+            records.forEach((record, index) => {
+                // If record is not in range for current page, do not display.
+                if (index < RANGE_MIN || index > RANGE_MAX) {
+                    return;
+                }
+
                 if (record.hasOwnProperty('reportData')) {
                     let newRow = $('#scanTable').append('<tr></tr>').children().last();
 
@@ -10,7 +24,16 @@ $(document).ready(() => {
                     let reportData = record.reportData;
 
                     for (const [key, value] of Object.entries(reportData)) {
-                        newRow.append(`<td>${value}</td>`);
+                        if (key === 'patientID') {
+                            if (reportData.patientID === '') {
+                                newRow.append(`<td class="text-warning"><i class="bi bi-patch-question-fill" title="No patient ID specified"></i></td>`);
+                            } else {
+                                clientIdCounts[reportData.patientID] = (clientIdCounts.hasOwnProperty(reportData.patientID)) ? clientIdCounts[reportData.patientID] + 1 : 1;
+                                newRow.append(`<td>${value}</td>`);
+                            }
+                        } else {
+                            newRow.append(`<td>${value}</td>`);
+                        }
                     }
 
                     /* Add Action Buttons */
@@ -38,25 +61,14 @@ $(document).ready(() => {
 
                     dropdownMenu.append(`<li><a class="dropdown-item text-danger" href="/api/delete/${record._id}">
                         <i class="bi bi-trash"></i> Delete</a></li>`);
-                } else {
-                    let newRow = $('#scanTable').append('<tr></tr>').children().last();
-                    let patientData = record.patientData;
-
-                    if (typeof patientData !== 'object' || patientData === null || !patientData.hasOwnProperty('barcode')) {
-                        return;
-                    }
-
-                    newRow.append(`<td>${patientData.barcode}</td>`);
-                    newRow.append(`<td>${patientData.firstName} ${patientData.lastName}</td>`);
-
-                    // Create download button
-                    newRow.append(`<td><a class="btn btn-info" href="/api/xlsx/${record._id}">
-                    <i class="bi bi-file-earmark-spreadsheet"></i> Download</a></td>`);
-
-                    // Create delete button
-                    newRow.append(`<td><a class="btn btn-danger" href="/api/delete/${record._id}">
-                    <i class="bi bi-trash"></i> Delete</a></td>`);
                 }
             });
+
+            for (const [key, value] of Object.entries(clientIdCounts)) {
+                if (value > 1) {
+                    $(`td:contains('${key}')`).append(' <i class="bi bi-exclamation-triangle-fill text-danger" title="Duplicate ID exists"></i>');
+                }
+            }
+
         });
 });

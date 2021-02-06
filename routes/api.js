@@ -401,7 +401,7 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
     if (EXCEL_MIMETYPES.includes(req.file.mimetype)) {
         const workbook = XLSX.readFile(req.file.path);
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const data = XLSX.utils.sheet_to_json(worksheet);
+        const data = XLSX.utils.sheet_to_json(worksheet, {defval: ''});
 
         data.forEach((record) => {
             let patientData = {};
@@ -412,7 +412,12 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
                 if (!patientDataPopulated) {
                     patientData[key] = value;
                 } else {
-                    reportData[key] = value;
+                    if (key === 'receivedDate') {
+                        const today = new Date();
+                        reportData[key] = `${today.getFullYear()}-${today.toISOString().substring(5, 7)}-${today.toISOString().substring(8, 10)}`;
+                    } else {
+                        reportData[key] = value;
+                    }
                 }
 
                 if (key === 'ethnicity') {
@@ -769,13 +774,13 @@ router.post('/xlsxRange', (req, res) => {
 
     let date1 = req.body.date1.split("-");
     let date2 = req.body.date2.split("-");
-    
+
     //Improve algorithm later (finding specific date)
     let numDays1 = (parseInt(date1[1]) * 30) + parseInt(date1[2]);
     let numDays2 = (parseInt(date2[1]) * 30) + parseInt(date2[2]);
     console.log(numDays1);
     console.log(numDays2);
-    
+
 
     Record.find({}, 'patientData reportData')
         .then((records) => {
@@ -788,24 +793,21 @@ router.post('/xlsxRange', (req, res) => {
                 //Two different arrays to for different formatting
                 let recordDaysArr1 = record.reportData.testDate.split("/");
                 let recordDaysArr2 = record.reportData.testDate.split('-');
-                let recordDays1 = parseInt(recordDaysArr1[0])*30 + parseInt(recordDaysArr1[1]);
-                let recordDays2 = parseInt(recordDaysArr2[1])*30 + parseInt(recordDaysArr2[2]);
+                let recordDays1 = parseInt(recordDaysArr1[0]) * 30 + parseInt(recordDaysArr1[1]);
+                let recordDays2 = parseInt(recordDaysArr2[1]) * 30 + parseInt(recordDaysArr2[2]);
 
-                console.log("Record 1:" + recordDays1);
-                console.log("Record 2:"  + recordDays2);
-                
-                if(!isNaN(recordDays1)){
+                if (!isNaN(recordDays1)) {
 
-                    if(recordDays1 >= numDays1 && recordDays1 <= numDays2){
+                    if (recordDays1 >= numDays1 && recordDays1 <= numDays2) {
                         return record;
-                    } 
-                }  
+                    }
+                }
 
-                if(!isNaN(recordDays2)){
-                    if(recordDays2 >= numDays1 && recordDays2 <= numDays2){
+                if (!isNaN(recordDays2)) {
+                    if (recordDays2 >= numDays1 && recordDays2 <= numDays2) {
                         return record;
-                    } 
-                }  
+                    }
+                }
             });
 
             const workbook = XLSX.utils.book_new();
@@ -818,7 +820,7 @@ router.post('/xlsxRange', (req, res) => {
             const workbookBuffer = XLSX.write(workbook, {bookType: 'xlsx', type: 'buffer'});
 
             res.set({
-                'Content-Disposition': `attachment; filename=records.xlsx`,
+                'Content-Disposition': `attachment; filename=records-filtered.xlsx`,
                 'Content-Type': 'application/octet-stream'
             });
             res.send(workbookBuffer);
