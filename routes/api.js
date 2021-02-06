@@ -340,6 +340,8 @@ router.post('/submit/:id/:batch/:page', (req, res) => {
         .then((record) => {
             const today = new Date();
 
+            req.body.symptoms = req.body.symptoms.join(',');
+
             record.patientData = req.body;
             record.reportData = {
                 patientID: req.body.barcode,
@@ -732,11 +734,9 @@ router.get('/xlsx', (req, res) => {
 
     Record.find({}, 'patientData reportData')
         .then((records) => {
-            records = records.filter(function(record) {
+            records = records.filter((record) => {
                 return !!record.reportData;
             });
-
-            console.log(records);
 
             const workbook = XLSX.utils.book_new();
             let worksheet = XLSX.utils.json_to_sheet(
