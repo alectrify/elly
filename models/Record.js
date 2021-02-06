@@ -5,6 +5,7 @@ const recordSchema = new mongoose.Schema({
     batchNum: Number, // Range: [0, Infinity]
     pageNum: Number, // Range: [1, 5]
     ocrResults: [String],
+    isNewForm: Boolean,
     patientData: {},
     reportData: {}
 });

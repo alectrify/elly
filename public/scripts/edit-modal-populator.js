@@ -7,20 +7,20 @@ editModal.addEventListener('show.bs.modal', function (event) {
     form.empty();
     form.attr('action', `/api/edit/${recordID}`);
 
-    function addSingleInput(fieldName, fieldTitle, value) {
+    function addSingleInput(fieldName, fieldTitle, value, type='text') {
         form.append(`<div class="mb-3">
                 <label for="${fieldName}" class="form-label">${fieldTitle}</label>
-                <input type="text" class="form-control" id="${fieldName}" name="${fieldName}" value="${value}">
+                <input type="${type}" class="form-control" id="${fieldName}" name="${fieldName}" value="${value}">
             </div>`);
     }
 
-    function addMultiInput(colArray) {
+    function addMultiInput(colArray, typeArray = new Array(colArray.length).fill('text')) {
         const row = $('<div class="row mb-3"></div>');
-        colArray.forEach((col) => {
+        colArray.forEach((col, index) => {
             const [fieldName, fieldTitle, value] = col;
             row.append(`<div class="col">
                 <label for="${fieldName}" class="form-label">${fieldTitle}</label>
-                <input type="text" class="form-control" id="${fieldName}" name="${fieldName}" value="${value}">
+                <input type="${typeArray[index]}" class="form-control" id="${fieldName}" name="${fieldName}" value="${value}">
             </div>`)
         })
 
@@ -38,19 +38,22 @@ editModal.addEventListener('show.bs.modal', function (event) {
             ]);
             addSingleInput('labID', 'Lab ID', reportData.labID);
             addSingleInput('name', 'Name', reportData.name);
-            addSingleInput('receivedDate', 'Submitted', reportData.receivedDate);
             addMultiInput([
-                ['result', 'N/P/In-V/Re-test', reportData.result],
-                ['testDate', 'Test Date', reportData.testDate]
+                ['testDate', 'Test Date', reportData.testDate],
+                ['receivedDate', 'Submitted', reportData.receivedDate]
+            ], ['date', 'date']);
+            addMultiInput([
+                ['sampleType', 'Sample Type', reportData.sampleType],
+                ['result', 'N/P/In-V/Re-test', reportData.result]
             ]);
             addMultiInput([
                 ['ACI', 'A/C/I', reportData.ACI],
                 ['paymentRequestDate', 'Payment Request Date', reportData.paymentRequestDate]
-            ]);
+            ], ['text', 'date']);
             addMultiInput([
                 ['paymentReceivedAmount', 'Payment Received Amount', reportData.paymentReceivedAmount],
                 ['paymentReceivedDate', 'Payment Received Date', reportData.paymentReceivedDate]
-            ]);
+            ], ['number', 'date']);
 
             $('input').css('background-color', '#fff3cd');
         });

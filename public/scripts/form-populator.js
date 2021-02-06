@@ -45,6 +45,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
         let physician = $('#physician');
         let npi = $('#npi');
         let collectDate = $('#collectionDate');
+        let collectPlace = $('#collectionLocation');
         let firstName = $('#firstName');
         let middleName = $('#middleName');
         let lastName = $('#lastName');
@@ -59,13 +60,15 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
         let insuranceNum = $('#insuranceNum');
         let ssn = $('#ssn');
         let driverLicense = $('#driverLicense');
+        let passport = $('#passport');
 
         let numeric = [npi, collectDate, zip, phone, birthDate, ssn];
         let alpha = [physician, firstName, middleName, lastName, city, state, insuranceName];
         let shorterFields = [middleName, physician, address, city, state];
         // let allFields = numeric.concat(barcode, address, email, insuranceNum, driverLicense, alpha);
 
-        let textArray = response;
+        let isNewForm = response.isNewForm;
+        let textArray = response.ocrResults;
 
         function addSuggestion(element, text) {
             text = text.replaceAll(junkRegExp, '');
@@ -142,8 +145,57 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             })
         }
 
+        function checkbox(label) {
+            label = label.toLowerCase();
+            let element;
+
+            switch(label) {
+                case 'sore throat':
+                    element = $('#soreThroat');
+                    break;
+                case 'runny nose':
+                    element = $('#runnyNose');
+                    break;
+                case 'sense of illness':
+                    element = $('#illness');
+                    break;
+                case 'muscle aches':
+                    element = $('#aches');
+                    break;
+                case 'loss of taste':
+                    element = $('#tasteLoss');
+                    break;
+                case 'hispanic or latino':
+                    element = $('#latinx');
+                    break;
+                case 'not hispanic or latino':
+                    element = $('#notLatinx');
+                    break;
+                case 'american indian or alaska native':
+                    element = $('#native');
+                    break;
+                case 'black or african american':
+                    element = $('#colored');
+                    break;
+                case 'pacific islander':
+                    element = $('#islander');
+                    break;
+                default:
+                    if ($(`#${label}`).length) {
+                        $(`#${label}`).prop('checked', true);
+                    }
+            }
+
+            if (element) {
+                element.prop('checked', true);
+            }
+        }
+
         // Standardized form
-        if (textArray.includes('newForm')) {
+        if (isNewForm) {
+            $('#hasInsurance').prop('checked', false);
+            $('#none').prop('checked', false);
+
             textArray.forEach(function(line, index) {
                 let line01 = textArray[index - 2];
                 let line0 = textArray[index - 1];
@@ -157,11 +209,15 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                         barcode.val(line);
                     }
                     else {
-                        barcode.val()
+                        barcode.val(line2);
                     }
                 }
 
-                if (line.match(/First Name/) != null) {
+                if (line.match(/X$/) != null || line.match(/^x$/) != null) {
+                    checkbox(line0);
+                }
+
+                else if (line.match(/First Name/) != null) {
                     firstName.val(line2);
                     addSuggestions(firstName, line01);
                 }
@@ -177,32 +233,32 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 }
 
                 else if (line.match(/Birth Date/) != null) {
-                    birthDate.val(line2);
+                    birthDate.val(line2.replace(/\s/g, ''));
                     addSuggestions(birthDate, line01);
                 }
 
-                else if (line.match(/Address/) != null) {
+                else if (line.match(/^Address/) != null) {
                     address.val(line2);
                     addSuggestions(address, line3);
                 }
 
-                else if (line.match(/City/) != null) {
+                else if (line.match(/^City/) != null) {
                     city.val(line2);
                     addSuggestions(city, line3);
                 }
 
                 else if (line.match(/State/) != null) {
-                    state.val(line2);
+                    state.val(line2.replace(/\s/g, ''));
                     addSuggestions(state, line2);
                 }
 
                 else if (line.match(/Zip/) != null) {
-                    zip.val(line2);
+                    zip.val(line2.replace(/\s/g, ''));
                     addSuggestions(zip, line2);
                 }
 
                 else if (line.match(/Email/) != null) {
-                    email.val(line2);
+                    email.val(line2.replace(/\s/g, ''));
                     addSuggestions(email, line3);
                 }
 
@@ -211,25 +267,50 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 }
 
                 else if (line.match(/Insurance Co/) != null) {
-                    insuranceName.val(line2);
-                    addSuggestions(insuranceName, line3);
+                    if (!line2.match(/Policy ID/)) {
+                        $('#hasInsurance').prop('checked', true);
+                        insuranceName.val(line2);
+                        addSuggestions(insuranceName, line3);
+                    }
                 }
 
                 else if (line.match(/Policy ID/) != null) {
-                    insuranceNum.val(line2.replace(/\s/g, ''));
-                    addSuggestions(insuranceNum, line3);
+                    if (!line2.match(/ADDR/)) {
+                        insuranceNum.val(line2.replace(/\s/g, ''));
+                        addSuggestions(insuranceNum, line3);
+                    }
                 }
 
-                else if (line.match(/SSN/) != null) {
-                    ssn.val(line2.replace(/\s/g, ''));
+                else if (line.match(/^SSN/) != null) {
+                    if (!line2.match(/Symptoms/)) {
+                        ssn.val(line2.replace(/\s/g, ''));
+                    }
                 }
 
                 else if (line.match(/Driver License/) != null) {
-                    driverLicense.val(line2.replace(/\s/g, ''));
+                    if (!line2.match(/SSN/)) {
+                        driverLicense.val(line2.replace(/\s/g, ''));
+                    }
                 }
 
                 else if (line.match(/Collection Date/) != null) {
-                    collectDate.val(line2.replace(/\s/g, ''));
+                    if (line2.match('[a-zA-Z]') == null) {
+                        collectDate.val(line2.replace(/\s/g, ''));
+                    }
+
+                    else if (line3.match('[a-zA-Z]') == null) {
+                        collectDate.val(line3.replace(/\s/g, ''));
+                    }
+                }
+
+                else if (line.match(/Collection Location/) != null) {
+                    if (line2.match(/Collection|[0-9]/) == null) {
+                        collectPlace.val(line2);
+                    }
+
+                     else if (line3.match(/Collection|[0-9]/) == null) {
+                        collectPlace.val(line3);
+                    }
                 }
 
                 else if (line.match(/Physician/) != null) {
@@ -239,6 +320,10 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
 
                 else if (line.match(/NPI/) != null) {
                     npi.val(line2.replace(/\s/g, ''));
+                }
+
+                else if (line.match(/Passport/) != null) {
+                    passport.val(line2.replace(/\s/g, ''));
                 }
             });
         }

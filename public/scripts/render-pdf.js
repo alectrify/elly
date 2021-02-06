@@ -3,35 +3,40 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
 // Asynchronous download of PDF
 var loadingTask = pdfjsLib.getDocument(`/api/pdf/${id}/${batchNum}`);
-loadingTask.promise
-    .then(function (pdf) {
-        console.log('PDF loaded');
 
-        // Fetch the first page
-        var pageNumber = parseInt(pageNum);
-        pdf.getPage(pageNumber).then(function (page) {
-            console.log('Page loaded');
+function renderPDF(pg) {
+    loadingTask.promise
+        .then(function (pdf) {
+            console.log('PDF loaded');
 
-            var scale = 0.75;
-            var viewport = page.getViewport({scale: scale});
+            // Fetch the first page
+            var pageNumber = parseInt(pg);
+            pdf.getPage(pageNumber).then(function (page) {
+                console.log('Page loaded');
 
-            // Prepare canvas using PDF page dimensions
-            var canvas = document.getElementById('pdfCanvas');
-            var context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+                var scale = 0.75;
+                var viewport = page.getViewport({scale: scale});
 
-            // Render PDF page into canvas context
-            var renderContext = {
-                canvasContext: context,
-                viewport: viewport
-            };
-            var renderTask = page.render(renderContext);
-            renderTask.promise.then(function () {
-                console.log('Page rendered');
+                // Prepare canvas using PDF page dimensions
+                var canvas = document.getElementById('pdfCanvas');
+                var context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Render PDF page into canvas context
+                var renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                var renderTask = page.render(renderContext);
+                renderTask.promise.then(function () {
+                    console.log('Page rendered');
+                });
             });
+        }, function (reason) {
+            // PDF loading error
+            console.error(reason);
         });
-    }, function (reason) {
-        // PDF loading error
-        console.error(reason);
-    });
+}
+
+renderPDF(pageNum);
