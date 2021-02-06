@@ -61,11 +61,11 @@
 
             <div class="row mt-5">
                 <div class="col-md-8 offset-md-2">
-                    <form action="/api/upload" method="post" enctype="multipart/form-data">
+                    <form action="/api/upload-standard" method="post" enctype="multipart/form-data">
                         <div class="mb-3 mt-3">
-                            <label for="formFile" class="form-label">Scan and upload your form by clicking "Choose
+                            <label for="forms" class="form-label">Scan and upload your form by clicking "Choose
                                 File"</label>
-                            <input class="form-control" type="file" id="uploadFile" name="uploadFile">
+                            <input class="form-control" type="file" id="forms" name="forms" multiple>
                         </div>
                         <button class="btn btn-primary" type="submit">Upload</button>
                     </form>
@@ -111,9 +111,6 @@
 <!-- Bundle: Bootstrap, jQuery -->
 <script src="scripts/bundle.js"></script>
 
-<script type="text/javascript" src="https://unpkg.com/webcam-easy/dist/webcam-easy.min.js"></script>
-
 <!-- Custom JavaScript -->
-<script type="text/javascript" src="scripts/take-photo.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 const urlSections = window.location.pathname.split('/');
 const id = urlSections[urlSections.length - 3];
 const batchNum = urlSections[urlSections.length - 2];
-const pageNum = urlSections[urlSections.length - 1];
+let pageNum = urlSections[urlSections.length - 1];
 
 const hasInsurance = $('#hasInsurance');
 const insuranceFields = $('#insuranceFields');
@@ -11,6 +11,7 @@ $(document).ready(function () {
     $('#batchDisplay').text(`${parseInt(batchNum)}`);
     $('#editForm').attr('action', `/api/submit/${id}/${batchNum}/${pageNum}`);
     $('#openPDF').attr('href', `/api/pdf/${id}/${batchNum}/${pageNum}`);
+    $('input[type=number]').css('background-color', '#fff3cd');
     $('input[type=text]').css('background-color', '#fff3cd');
 
     hasInsurance.click(function () {

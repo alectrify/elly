@@ -57,7 +57,6 @@
     <section class="pt-4">
         <div class="container-fluid px-4">
             <div class="row mb-3">
-                <h1 class="text-secondary">Switch Pages</h1>
                 <h2 class="text-info">Batch <span id="batchDisplay"></span></h2>
                 <div id="pagination">
 
@@ -84,80 +83,134 @@
 
                 <div class="col-12 col-sm-4 col-lg-6">
                     <form id="editForm" method="post" action="">
-                        <div class="row mb-3">
+                        <div class="row mb-4">
                             <div class="col">
-                                <label for="barcode" class="form-label">Barcode Number</label>
+                                <label for="barcode" class="form-label">Barcode</label>
                                 <input type="text" class="form-control" id="barcode" name="barcode" required>
                             </div>
 
                             <div class="col">
-                                <label for="physician" class="form-label">Physician's Name</label>
+                                <label for="physician" class="form-label">Physician</label>
                                 <input type="text" class="form-control" id="physician" name="physician">
                                 <details open>
                                     <summary>Text Suggestions</summary>
                                 </details>
                             </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="npi" class="form-label">NPI No.</label>
-                                <input type="text" class="form-control" id="npi" name="npi">
-                                <details open>
-                                    <summary>Text Suggestions</summary>
-                                </details>
-                            </div>
 
                             <div class="col">
-                                <label for="collectionDate" class="form-label">Collection Date (MM/DD/YYYY)</label>
-                                <input type="text" class="form-control" id="collectionDate" name="collectionDate" required>
+                                <label for="npi" class="form-label">NPI</label>
+                                <input type="number" class="form-control" id="npi" name="npi">
                                 <details open>
                                     <summary>Text Suggestions</summary>
                                 </details>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="firstName" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" required>
-                            <details open>
-                                <summary>Text Suggestions</summary>
-                            </details>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="collectionDate" class="form-label">Collection Date (mm/dd/yyyy)</label>
+                                <input type="text" class="form-control" id="collectionDate" name="collectionDate"
+                                       required>
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
+
+                            <div class="col">
+                                <label for="collectionLocation" class="form-label">Collection Location (Client Group)</label>
+                                <input type="text" class="form-control" id="collectionLocation"
+                                       name="collectionLocation" required>
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="middleName" class="form-label">Middle Name</label>
-                            <input type="text" class="form-control" id="middleName" name="middleName">
-                            <details open>
-                                <summary>Text Suggestions</summary>
-                            </details>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
+
+                            <div class="col">
+                                <label for="middleName" class="form-label">Middle Name</label>
+                                <input type="text" class="form-control" id="middleName" name="middleName">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
+
+                            <div class="col">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="lastName" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" required>
-                            <details open>
-                                <summary>Text Suggestions</summary>
-                            </details>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="birthDate" class="form-label">Birth Date (MM/DD/YYYY)</label>
+                                <input type="text" class="form-control" id="birthDate" name="birthDate">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
+
+                            <div class="col pt-2">
+                                <h5>Sex:</h5>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sex" id="male" value="male"
+                                           checked>
+                                    <label class="form-check-label" for="male">Male</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="sex" id="female"
+                                           value="female">
+                                    <label class="form-check-label" for="female">Female</label>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="address" name="address">
-                            <details open>
-                                <summary>Text Suggestions</summary>
-                            </details>
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <label for="phone" class="form-label">Phone Number (XXX-XXX-XXXX)</label>
+                                <input type="text" class="form-control" id="phone" name="phone">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label for="email" class="form-label">E-mail Address</label>
+                                <input type="text" class="form-control" id="email" name="email">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="city" class="form-label">City</label>
-                            <input type="text" class="form-control" id="city" name="city">
-                            <details open>
-                                <summary>Text Suggestions</summary>
-                            </details>
-                        </div>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="address" name="address">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
 
-                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city">
+                                <details open>
+                                    <summary>Text Suggestions</summary>
+                                </details>
+                            </div>
+
                             <div class="col">
                                 <label for="state" class="form-label">State</label>
                                 <input type="text" class="form-control" id="state" name="state">
@@ -167,55 +220,15 @@
                             </div>
 
                             <div class="col">
-                                <label for="zip" class="form-label">ZIP Code</label>
-                                <input type="text" class="form-control" id="zip" name="zip">
+                                <label for="zip" class="form-label">ZIP</label>
+                                <input type="number" class="form-control" id="zip" name="zip">
                                 <details open>
                                     <summary>Text Suggestions</summary>
                                 </details>
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">E-mail</label>
-                            <input type="text" class="form-control" id="email" name="email">
-                            <details open>
-                                <summary>Text Suggestions</summary>
-                            </details>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="phone" class="form-label">Phone Number (XXX-XXX-XXXX)</label>
-                                <input type="text" class="form-control" id="phone" name="phone">
-                                <details open>
-                                    <summary>Text Suggestions</summary>
-                                </details>
-                            </div>
-
-                            <div class="col">
-                                <label for="birthDate" class="form-label">Birth Date (MM/DD/YYYY)</label>
-                                <input type="text" class="form-control" id="birthDate" name="birthDate">
-                                <details open>
-                                    <summary>Text Suggestions</summary>
-                                </details>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            Sex:
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="sex" id="male" value="male"
-                                       checked>
-                                <label class="form-check-label" for="male">Male</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="sex" id="female"
-                                       value="female">
-                                <label class="form-check-label" for="female">Female</label>
-                            </div>
-                        </div>
-
-                        <div class="mb-3 form-check">
+                        <div class="mb-4 form-check">
                             <input class="form-check-input" type="checkbox" value="true" id="hasInsurance"
                                    checked>
                             <label class="form-check-label" for="hasInsurance">
@@ -223,7 +236,8 @@
                             </label>
                         </div>
 
-                        <div id="insuranceFields" class="mb-3 p-3 border rounded">
+                        <div id="insuranceFields" class="mb-4 p-3 border rounded">
+                            <h5 class="text-decoration-underline">For Insured</h5>
                             <div class="row mb-3">
                                 <div class="col">
                                     <label for="insuranceName" class="form-label">Insurance Name</label>
@@ -234,8 +248,7 @@
                                 </div>
 
                                 <div class="col">
-                                    <label for="insuranceNum" class="form-label">Policy Number or Insurance
-                                        ID</label>
+                                    <label for="insuranceNum" class="form-label">Policy Number</label>
                                     <input type="text" class="form-control" id="insuranceNum" name="insuranceNum">
                                     <details open>
                                         <summary>Text Suggestions</summary>
@@ -244,80 +257,154 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            Symptoms experienced in the last 14 days:<br>
+                        <div class="mb-4 p-3 border rounded">
+                            <h5 class="text-decoration-underline">For Uninsured</h5>
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="ssn" class="form-label">SSN</label>
+                                    <input type="text" class="form-control" id="ssn" name="ssn">
+                                    <details open>
+                                        <summary>Text Suggestions</summary>
+                                    </details>
+                                </div>
 
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="cough"
-                                       value="cough">
-                                <label class="form-check-label" for="cough">Cough</label>
+                                <div class="col">
+                                    <label for="driverLicense" class="form-label">Driver License Number</label>
+                                    <input type="text" class="form-control" id="driverLicense" name="driverLicense">
+                                    <details open>
+                                        <summary>Text Suggestions</summary>
+                                    </details>
+                                </div>
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="fever"
-                                       value="fever">
-                                <label class="form-check-label" for="fever">Fever</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="chills"
-                                       value="chills">
-                                <label class="form-check-label" for="chills">Chills</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="soreThroat"
-                                       value="soreThroat">
-                                <label class="form-check-label" for="soreThroat">Sore throat</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="fatigue"
-                                       value="fatigue">
-                                <label class="form-check-label" for="fatigue">Fatigue</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="vomiting"
-                                       value="vomiting">
-                                <label class="form-check-label" for="vomiting">Vomiting</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="nausea"
-                                       value="nausea">
-                                <label class="form-check-label" for="nausea">Nausea</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="headache"
-                                       value="headache">
-                                <label class="form-check-label" for="headache">Headache</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="diarrhea"
-                                       value="diarrhea">
-                                <label class="form-check-label" for="diarrhea">Diarrhea</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="runnyNose"
-                                       value="runnyNose">
-                                <label class="form-check-label" for="runnyNose">Runny Nose</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="illness"
-                                       value="illness">
-                                <label class="form-check-label" for="illness">Sense of illness</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="aches"
-                                       value="aches">
-                                <label class="form-check-label" for="aches">Muscle Aches</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="tasteLoss"
-                                       value="tasteLoss">
-                                <label class="form-check-label" for="tasteLoss">Loss of taste</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" name="symptoms" id="none" value="none"
-                                       checked>
-                                <label class="form-check-label" for="none">None</label>
-                            </div>
+                        </div>
 
+                        <div class="mb-4 w-50">
+                            <label for="passport" class="form-label">Passport Number</label>
+                            <input type="text" class="form-control" id="passport" name="passport">
+                            <details open>
+                                <summary>Text Suggestions</summary>
+                            </details>
+                        </div>
+
+                        Symptoms experienced in the last 14 days:<br>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="none"
+                                           value="none"
+                                           checked>
+                                    <label class="form-check-label" for="none">None</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="cough"
+                                           value="cough">
+                                    <label class="form-check-label" for="cough">Cough</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="fever"
+                                           value="fever">
+                                    <label class="form-check-label" for="fever">Fever</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="chills"
+                                           value="chills">
+                                    <label class="form-check-label" for="chills">Chills</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="soreThroat"
+                                           value="soreThroat">
+                                    <label class="form-check-label" for="soreThroat">Sore throat</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="fatigue"
+                                           value="fatigue">
+                                    <label class="form-check-label" for="fatigue">Fatigue</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="vomiting"
+                                           value="vomiting">
+                                    <label class="form-check-label" for="vomiting">Vomiting</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="nausea"
+                                           value="nausea">
+                                    <label class="form-check-label" for="nausea">Nausea</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="headache"
+                                           value="headache">
+                                    <label class="form-check-label" for="headache">Headache</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="diarrhea"
+                                           value="diarrhea">
+                                    <label class="form-check-label" for="diarrhea">Diarrhea</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="runnyNose"
+                                           value="runnyNose">
+                                    <label class="form-check-label" for="runnyNose">Runny nose</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="illness"
+                                           value="illness">
+                                    <label class="form-check-label" for="illness">Sense of illness</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row mb-3">
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="aches"
+                                           value="aches">
+                                    <label class="form-check-label" for="aches">Muscle aches</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" name="symptoms" id="tasteLoss"
+                                           value="tasteLoss">
+                                    <label class="form-check-label" for="tasteLoss">Loss of taste</label>
+                                </div>
+                            </div>
+                            <div class="col">
+
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -335,7 +422,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="race" id="colored"
                                        value="colored">
-                                <label class="form-check-label" for="colored">Black or African American Native</label>
+                                <label class="form-check-label" for="colored">Black or African American</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="race" id="islander"
@@ -367,37 +454,6 @@
                                        value="notLatinx">
                                 <label class="form-check-label" for="notLatinx">Not Hispanic or Latino</label>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="ethnicity" id="other"
-                                       value="other">
-                                <label class="form-check-label" for="ethnicity">Unknown or Other</label>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="ssn" class="form-label">Social Security Number</label>
-                                <input type="text" class="form-control" id="ssn" name="ssn">
-                                <details open>
-                                    <summary>Text Suggestions</summary>
-                                </details>
-                            </div>
-
-                            <div class="col">
-                                <label for="driverLicense" class="form-label">Driver License Number</label>
-                                <input type="text" class="form-control" id="driverLicense" name="driverLicense">
-                                <details open>
-                                    <summary>Text Suggestions</summary>
-                                </details>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="passport" class="form-label">Passport Number</label>
-                            <input type="text" class="form-control" id="passport" name="passport">
-                            <details open>
-                                <summary>Text Suggestions</summary>
-                            </details>
                         </div>
 
                         <button type="submit" class="btn btn-primary">Submit</button>

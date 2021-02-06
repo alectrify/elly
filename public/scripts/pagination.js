@@ -1,5 +1,5 @@
 $(document).ready(() => {
-    $('#controls').children().click(function() {
+    $('#controls').children().click(function () {
         let currentBatch = parseInt($('#batchDisplay').text()) - 1;
         let newBatchNum = currentBatch + ($(this).attr('id') === 'next' ? 1 : -1);
 
@@ -29,8 +29,13 @@ $(document).ready(() => {
                                 color = i === parseInt(pageNum) ? 'info' : 'success';
                             }
 
-                            pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
+                            if (!batch || batch.hasOwnProperty('isNewForm') || !batch.hasOwnProperty('patientData')) {
+                                pagination.append(`<button id="pg${i}" class="btn btn-${color} mt-2 me-2" 
+                                    onclick="renderPDF(${i})"">Page ${i}${tooltip}</button>`);
+                            } else {
+                                pagination.append(`<a id="pg${i}" class="btn btn-${color} mt-2 me-2" 
                                     href="/edit/${id}/${newBatchNum}/${i}">Page ${i}${tooltip}</a>`);
+                            }
                         });
                 }
             });
