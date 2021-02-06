@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="styles/bootstrap.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles/style.css">
+
+    <!-- STRIPE Integration -->
+    <script src="https://stripe.com/docs/payments/checkout/migration" defer></script>
+    <script>
+            var stripePublicKey = 'pk_test_51HcMe8In4qQnBeOS8iq89uWmwXBD4wb3ZdKhnYbrnzu8qjxO9j9aKHFVArCXGlFF716ULuzpwS6x0MnLnOpgdzOP00gKhJomob'
+    </script>
+
+
+
+    <title>Elly - Home</title>
+</head>
+
+<body class="d-flex flex-wrap h-100">
+
+<header>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
+                    aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <a class="navbar-brand text-primary" href="#">
+                    <i class="bi bi-file-earmark-medical-fill"></i>
+                    Elly
+                </a>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/records">Records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/photo-scan">Photo Scan</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Payment</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main id="indexMain" class="m-auto">
+    <section>
+        <div class="container">
+            <h1 class="text-primary text-center">
+                <i class="bi bi-file-earmark-medical-fill"></i>
+                Elly
+            </h1>
+
+            <div class="row mt-5">
+                <div class="col-md-10 offset-md-1">
+                    <form>
+
+                        <h3 class = "text-left">AAA0000005</h3>
+                        <div class="form-group row mt-4">
+                            <label class="col-sm-3 col-form-label">First Name:</label>
+                            <div class="col-sm-9">
+                              <input class="form-control">
+                            </div>
+                          </div>
+
+                          <div class="form-group row mt-4">
+                            <label class="col-sm-3 col-form-label">Middle Name:</label>
+                            <div class="col-sm-9">
+                              <input class="form-control">
+                            </div>
+                          </div>
+
+                          <div class="form-group row mt-4">
+                            <label class="col-sm-3 col-form-label">Last Name:</label>
+                            <div class="col-sm-9">
+                              <input class="form-control">
+                            </div>
+                          </div>
+
+                          <div class = "form-group row mt-4">
+                            <div class = "col-sm-3">
+                                <label class = "col-form-label">Sex:</label>
+                            </div>
+                            <div class = "col-sm-9 mt-2">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" value = "male">
+                                    <label class="form-check-label">Male</label>
+                                  </div>
+                                  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio"  value="female">
+                                    <label class="form-check-label" >Female</label>
+                                  </div>
+                            </div>
+                          </div>
+
+                          <div class="form-group row mt-4">
+                            <label class="col-sm-3 col-form-label">Birth Date:</label>
+                            <div class="col-sm-9">
+                              <input class="form-control">
+                            </div>
+                          </div>
+
+                          <div class="form-group row mt-4">
+                            <label class="col-sm-3 col-form-label">Passport:</label>
+                            <div class="col-sm-9">
+                              <input class="form-control">
+                            </div>
+                          </div>
+
+                          <div class="form-group row mt-4">
+                            <label class="col-sm-3 col-form-label">Nationality:</label>
+                            <div class="col-sm-9">
+                              <input class="form-control">
+                            </div>
+                          </div>
+                        <div class = "form-group">
+                            <div class = "col-sm-9 offset-3">
+                                <div class = "d-grid">
+                                    <button class="btn btn-primary mt-5 btn-block payment_btn" type="submit">Proceed to payment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<footer class="bg-dark mt-auto w-100 py-4">
+    <div class="container text-light">
+        <address>
+            <strong>Elly, Inc.</strong><br>
+            1355 Market St, Suite 900<br>
+            San Francisco, CA 94103<br>
+            <abbr title="Phone">P:</abbr> (123) 456-7890
+        </address>
+
+        <address>
+            <strong>Full Name</strong><br>
+            <a href="mailto:first.last@example.com">first.last@example.com</a>
+        </address>
+
+        © 2020 Elly, Inc. · <a href="#">Privacy</a> · <a href="#">Terms</a>
+    </div>
+</footer>
+
+<!-- Bundle: Bootstrap, jQuery -->
+<script src="scripts/bundle.js"></script>
+
+<!-- Custom JavaScript -->
+<script src = "/scripts/payment.js" defer></script>
+</body>
+</html>

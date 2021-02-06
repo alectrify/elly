@@ -8,6 +8,8 @@ const PDFDocument = require('pdf-lib').PDFDocument;
 const sharp = require('sharp');
 const vision = require('@google-cloud/vision');
 const XLSX = require('xlsx');
+const stripe = require("stripe")('sk_test_51HcMe8In4qQnBeOSBN41yxvsTJpF0jfs4HtAQVuoGtve3C2T5n8cb24SF6x5DOG5F5JfzYCQ2J5ZYMmKfowvN3yk00jtGMMV8A');
+
 
 /* ---------- CONSTANTS ---------- */
 const client = new vision.ImageAnnotatorClient();
@@ -43,6 +45,7 @@ mongoose.connect(MONGO_URI, {
 }).catch((err) => console.log(err));
 const Record = require('../models/Record');
 const PDFBatch = require('../models/PDFBatch');
+const Payment = require("../models/payments.js");
 
 /* ----- MULTER ----- */
 const upload = multer({
@@ -246,6 +249,11 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                     .catch((err) => res.status(400).json('Error: ' + err));
             }
         })
+});
+
+//POST - payment info
+router.post('/payment', (req, res) => {
+    res.send("This is the post route");
 });
 
 // GET /api/pdf/:id/:batch/ - Get a PDF of a requested batch
