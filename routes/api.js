@@ -128,54 +128,57 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
         batchNum: batch,
         pageNum: page
     }, 'ocrResults isNewForm')
-        .then(async (record) => {
-            if (record && record.ocrResults.length === 2) { // Standard form
-                let textArray = [];
+        .then((record) => {
+            if (record && record.ocrResults && record.ocrResults.length === 2) { // Standard form
+                (async () => {
+                    let textArray = [];
 
-                for (const index in record.ocrResults) {
-                    const filePath = record.ocrResults[index];
+                    for (const index in record.ocrResults) {
+                        const filePath = record.ocrResults[index];
 
-                    if (!filePath) {
-                        return;
-                    }
+                        if (!filePath) {
+                            return;
+                        }
 
-                    console.log('< Running Vision API');
-                    const [result] = await client.documentTextDetection(filePath).catch();
-                    console.log('> Finished Running Vision API');
-                    const fullTextAnnotation = result.fullTextAnnotation;
-                    fullTextAnnotation.pages.forEach(page => {
-                        page.blocks.forEach(block => {
-                            // console.log(`Block confidence: ${block.confidence}`);
-                            block.paragraphs.forEach(paragraph => {
-                                let paraText = [];
-                                paragraph.words.forEach(word => {
-                                    const wordText = word.symbols.map(symbol => (symbol.confidence > 0.5) ? symbol.text : '').join('');
+                        console.log('< Running Vision API');
+                        const [result] = await client.documentTextDetection(filePath).catch();
+                        console.log('> Finished Running Vision API');
+                        const fullTextAnnotation = result.fullTextAnnotation;
+                        fullTextAnnotation.pages.forEach(page => {
+                            page.blocks.forEach(block => {
+                                // console.log(`Block confidence: ${block.confidence}`);
+                                block.paragraphs.forEach(paragraph => {
+                                    let paraText = [];
+                                    paragraph.words.forEach(word => {
+                                        const wordText = word.symbols.map(symbol => (symbol.confidence > 0.5) ? symbol.text : '').join('');
 
-                                    //Removing unnecessary characters
-                                    let replaced_word_text = String(wordText);
-                                    replaced_word_text = replaced_word_text.replace(/[^\x20-\x7E]/g, '');
+                                        //Removing unnecessary characters
+                                        let replaced_word_text = String(wordText);
+                                        replaced_word_text = replaced_word_text.replace(/[^\x20-\x7E]/g, '');
 
-                                    if (word.confidence > 0.5 && replaced_word_text.length > 0) {
-                                        paraText.push(replaced_word_text);
+                                        if (word.confidence > 0.5 && replaced_word_text.length > 0) {
+                                            paraText.push(replaced_word_text);
+                                        }
+                                    });
+
+                                    if (paraText.join(' ').length > 0) {
+                                        textArray.push(paraText.join(' ').trim());
                                     }
                                 });
-
-                                if (paraText.join(' ').length > 0) {
-                                    textArray.push(paraText.join(' ').trim());
-                                }
                             });
                         });
-                    });
 
-                    fs.unlink(filePath, (err) => {
-                        if (err) throw err;
-                    });
-                }
+                        fs.unlink(filePath, (err) => {
+                            if (err) throw err;
+                        });
+                    }
 
-                record.ocrResults = textArray;
-                record.save();
+                    record.ocrResults = textArray;
+                    record.save();
 
-                res.json(record);
+                    res.json(record);
+                })();
+
             } else if (record && record.ocrResults) {
                 res.json(record);
             } else {
@@ -226,8 +229,6 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                         const responses = result.responses[0].responses;
                         let textArray = [];
                         let tempText = "";
-                        let rawText = "";
-
                         for (const response of responses) {
                             // console.log(`Full text: ${response.fullTextAnnotation.text}`);
                             // rawText = response.fullTextAnnotation.text;
@@ -284,14 +285,14 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                         }
                         console.log('> Finished Running Vision API');
 
-                        await Record.create({
+                        record = await Record.create({
                             id: id,
                             batchNum: batch,
                             ocrResults: textArray,
                             pageNum: page
                         });
 
-                        res.json(textArray);
+                        res.json(record);
                     })
                     .catch((err) => res.status(400).json('Error: ' + err));
             }

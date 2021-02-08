@@ -38,37 +38,42 @@ let junkWords = [
 
 const junkRegExp = new RegExp(junkWords.join('|'), 'ig');
 
+let barcode = $('#barcode');
+let physician = $('#physician');
+let npi = $('#npi');
+let collectDate = $('#collectionDate');
+let collectPlace = $('#collectionLocation');
+let firstName = $('#firstName');
+let middleName = $('#middleName');
+let lastName = $('#lastName');
+let address = $('#address');
+let city = $('#city');
+let state = $('#state');
+let zip = $('#zip');
+let email = $('#email');
+let phone = $('#phone');
+let birthDate = $('#birthDate');
+let insuranceName = $('#insuranceName');
+let insuranceNum = $('#insuranceNum');
+let ssn = $('#ssn');
+let driverLicense = $('#driverLicense');
+let passport = $('#passport');
+
+let numeric = [npi, collectDate, zip, phone, birthDate, ssn];
+let alpha = [physician, firstName, middleName, lastName, city, state, insuranceName];
+let shorterFields = [middleName, physician, address, city, state];
+
 fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
     .then(response => response.json())
     .then(response => {
-        let barcode = $('#barcode');
-        let physician = $('#physician');
-        let npi = $('#npi');
-        let collectDate = $('#collectionDate');
-        let collectPlace = $('#collectionLocation');
-        let firstName = $('#firstName');
-        let middleName = $('#middleName');
-        let lastName = $('#lastName');
-        let address = $('#address');
-        let city = $('#city');
-        let state = $('#state');
-        let zip = $('#zip');
-        let email = $('#email');
-        let phone = $('#phone');
-        let birthDate = $('#birthDate');
-        let insuranceName = $('#insuranceName');
-        let insuranceNum = $('#insuranceNum');
-        let ssn = $('#ssn');
-        let driverLicense = $('#driverLicense');
-        let passport = $('#passport');
-
-        let numeric = [npi, collectDate, zip, phone, birthDate, ssn];
-        let alpha = [physician, firstName, middleName, lastName, city, state, insuranceName];
-        let shorterFields = [middleName, physician, address, city, state];
         // let allFields = numeric.concat(barcode, address, email, insuranceNum, driverLicense, alpha);
 
-        let isNewForm = response.isNewForm;
-        let textArray = response.ocrResults;
+        let record = response;
+
+        console.log(record);
+
+        let isNewForm = record.isNewForm;
+        let textArray = record.ocrResults;
 
         function addSuggestion(element, text) {
             text = text.replaceAll(junkRegExp, '');
@@ -138,6 +143,10 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
 
         function changeValIfMatch(element, lineArray, regex) {
             lineArray.forEach(function (line) {
+                if (!line) {
+                    return;
+                }
+
                 const match = line.match(regex);
                 if (match != null) {
                     element.val(match[0]);
