@@ -128,8 +128,55 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
         batchNum: batch,
         pageNum: page
     }, 'ocrResults isNewForm')
-        .then((record) => {
-            if (record && record.ocrResults) {
+        .then(async (record) => {
+            if (record && record.ocrResults.length === 2) { // Standard form
+                let textArray = [];
+
+                for (const index in record.ocrResults) {
+                    const filePath = record.ocrResults[index];
+
+                    if (!filePath) {
+                        return;
+                    }
+
+                    console.log('< Running Vision API');
+                    const [result] = await client.documentTextDetection(filePath).catch();
+                    console.log('> Finished Running Vision API');
+                    const fullTextAnnotation = result.fullTextAnnotation;
+                    fullTextAnnotation.pages.forEach(page => {
+                        page.blocks.forEach(block => {
+                            // console.log(`Block confidence: ${block.confidence}`);
+                            block.paragraphs.forEach(paragraph => {
+                                let paraText = [];
+                                paragraph.words.forEach(word => {
+                                    const wordText = word.symbols.map(symbol => (symbol.confidence > 0.5) ? symbol.text : '').join('');
+
+                                    //Removing unnecessary characters
+                                    let replaced_word_text = String(wordText);
+                                    replaced_word_text = replaced_word_text.replace(/[^\x20-\x7E]/g, '');
+
+                                    if (word.confidence > 0.5 && replaced_word_text.length > 0) {
+                                        paraText.push(replaced_word_text);
+                                    }
+                                });
+
+                                if (paraText.join(' ').length > 0) {
+                                    textArray.push(paraText.join(' ').trim());
+                                }
+                            });
+                        });
+                    });
+
+                    fs.unlink(filePath, (err) => {
+                        if (err) throw err;
+                    });
+                }
+
+                record.ocrResults = textArray;
+                record.save();
+
+                res.json(record);
+            } else if (record && record.ocrResults) {
                 res.json(record);
             } else {
                 PDFBatch.findOne({
@@ -325,8 +372,10 @@ router.get('/record/:id/:batch/:page', (req, res) => {
 router.get('/records', (req, res) => {
     logCall(req.route.path);
 
-    Record.find({}, 'batchNum id pageNum patientData reportData')
-        .then((records) => res.json(records))
+    Record.find({reportData: {$exists: true}}, 'batchNum id pageNum patientData reportData')
+        .then((records) => {
+            res.json(records);
+        })
         .catch((err) => res.status(400).json('Error: ' + err));
 });
 
@@ -575,7 +624,7 @@ router.post('/upload-standard', upload.array('forms', 3), async (req, res) => {
     logCall(req.route.path);
 
     if (req.files[0].mimetype.includes('image')) {
-        let textArray = [];
+        let paths = [];
 
         const modelID = new mongoose.Types.ObjectId();
         const pdfDoc = await PDFDocument.create();
@@ -587,33 +636,7 @@ router.post('/upload-standard', upload.array('forms', 3), async (req, res) => {
                 return;
             }
 
-            console.log('< Running Vision API');
-            const [result] = await client.documentTextDetection(file.path).catch();
-            console.log('> Finished Running Vision API');
-            const fullTextAnnotation = result.fullTextAnnotation;
-            fullTextAnnotation.pages.forEach(page => {
-                page.blocks.forEach(block => {
-                    // console.log(`Block confidence: ${block.confidence}`);
-                    block.paragraphs.forEach(paragraph => {
-                        let paraText = [];
-                        paragraph.words.forEach(word => {
-                            const wordText = word.symbols.map(symbol => (symbol.confidence > 0.5) ? symbol.text : '').join('');
-
-                            //Removing unnecessary characters
-                            let replaced_word_text = String(wordText);
-                            replaced_word_text = replaced_word_text.replace(/[^\x20-\x7E]/g, '');
-
-                            if (word.confidence > 0.5 && replaced_word_text.length > 0) {
-                                paraText.push(replaced_word_text);
-                            }
-                        });
-
-                        if (paraText.join(' ').length > 0) {
-                            textArray.push(paraText.join(' ').trim());
-                        }
-                    });
-                });
-            });
+            paths.push(file.path);
 
             const page = pdfDoc.addPage();
 
@@ -628,10 +651,6 @@ router.post('/upload-standard', upload.array('forms', 3), async (req, res) => {
             });
 
             await pdfDoc.save();
-
-            fs.unlink(file.path, (err) => {
-                if (err) throw err;
-            });
         }
 
         const pdfBytes = await pdfDoc.save();
@@ -648,7 +667,7 @@ router.post('/upload-standard', upload.array('forms', 3), async (req, res) => {
             batchNum: 0,
             pageNum: 1,
             isNewForm: true,
-            ocrResults: textArray
+            ocrResults: paths
         });
 
         res.redirect(`/edit/${modelID}/0/1`);
@@ -752,15 +771,6 @@ router.post('/upload-standard', upload.array('forms', 3), async (req, res) => {
     } else {
         res.redirect('/');
     }
-});
-
-// GET /api/records - Send JSON response of patientData's for records
-router.get('/records', (req, res) => {
-    logCall(req.route.path);
-
-    Record.find({}, 'batchNum id pageNum patientData reportData')
-        .then((records) => res.json(records))
-        .catch((err) => res.status(400).json('Error: ' + err));
 });
 
 // GET /api/xlsx - Get a spreadsheet of all records
