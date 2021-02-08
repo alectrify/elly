@@ -403,6 +403,8 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const data = XLSX.utils.sheet_to_json(worksheet, {defval: ''});
 
+        let patientIds = [];
+
         data.forEach((record) => {
             let patientData = {};
             let reportData = {};
@@ -414,7 +416,7 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
                 } else {
                     if (key === 'receivedDate') {
                         const today = new Date();
-                        reportData[key] = `${today.getFullYear()}-${today.toISOString().substring(5, 7)}-${today.toISOString().substring(8, 10)}`;
+                        reportData[key] = today.toISOString().substring(0, 10);
                     } else {
                         reportData[key] = value;
                     }
@@ -425,10 +427,30 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
                 }
             }
 
+            // Populate reportData
+            if (patientData.testDate !== '') {
+                const testDate = XLSX.SSF.parse_date_code(patientData.collectionDate);
+                reportData.testDate = new Date(testDate.y, testDate.m - 1, testDate.d).toISOString().substring(0, 10);
+            }
+
+            reportData.patientID = patientData.barcode;
+            reportData.clientGroup = patientData.collectionLocation;
+            reportData.name = `${patientData.firstName} ${patientData.lastName}`;
+
+
+            // Do not add duplicate
+            if (patientIds.includes(reportData.patientID)) {
+                return;
+            }
+
             Record.create({
                 patientData: patientData,
                 reportData: reportData
             }).then().catch((err) => res.status(400).json('Error: ' + err));
+
+            if (reportData.patientID !== '') {
+                patientIds.push(reportData.patientID);
+            }
         });
 
         fs.unlink(req.file.path, (err) => {

@@ -5,6 +5,8 @@ $(document).ready(() => {
             let pageCount = records.length / MAX_ROWS;
 
             // Pagination
+            $('.paginationNav').prepend(`<p>Total record count: ${records.length}<br>Max records per page: ${MAX_ROWS} </p>`)
+
             for (let i = 1; i <= pageCount; i++) {
                 $(`<li class="page-item ${(i === pageNum) ? 'active' : ''}"><a class="page-link" href="/records/${i}">${i}</a></li>\n`).insertBefore('.next');
             }
@@ -31,7 +33,10 @@ $(document).ready(() => {
                                 clientIdCounts[reportData.patientID] = (clientIdCounts.hasOwnProperty(reportData.patientID)) ? clientIdCounts[reportData.patientID] + 1 : 1;
                                 newRow.append(`<td>${value}</td>`);
                             }
-                        } else {
+                        } else if (key === 'paymentReceivedAmount' && value !== '') {
+                            newRow.append(`<td>\$${value}</td>`);
+                        }
+                        else {
                             newRow.append(`<td>${value}</td>`);
                         }
                     }
