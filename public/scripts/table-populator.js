@@ -2,7 +2,7 @@ $(document).ready(() => {
     fetch('/api/records')
         .then((response) => response.json())
         .then((records) => {
-            let pageCount = records.length / MAX_ROWS;
+            let pageCount = Math.ceil(records.length / MAX_ROWS);
 
             // Pagination
             $('.paginationNav').prepend(`<p>Total record count: ${records.length}<br>Max records per page: ${MAX_ROWS} </p>`)
