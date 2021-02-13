@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <%- include('../layouts/head.ejs'); %>
+
+    <title>Elly - Home</title>
+</head>
+
+<body>
+<%- include('../layouts/navbar', {view: 'user', active: 'dashboard'}); %>
+
+<main>
+    <!-- Hero Section -->
+    <section id="hero" class="text-center bg-light">
+        <div class="container py-4 py-md-5">
+            <h1 class="text-primary font-slab">
+                <i class="bi bi-cart3"></i>
+                Greetings, <%= name %>
+            </h1>
+            <p class="lead my-3">
+                Welcome to your dashboard.
+            </p>
+        </div>
+    </section>
+
+    <!-- Actions Section -->
+    <section id="actions" class="bg-primary text-dark">
+        <div class="container py-4 py-md-5">
+            <h1><i class="fa fa-upload"></i> Upload</h1>
+
+            <form class="w-50 mb-5" action="/api/upload" method="post" enctype="multipart/form-data">
+                <div class="mb-3 mt-3">
+                    <label for="formFile" class="form-label">Upload your form (.pdf, .xlsx, .xls)</label>
+                    <input class="form-control" type="file" id="uploadFile" name="uploadFile">
+                </div>
+                <button class="btn btn-info" type="submit">Upload</button>
+            </form>
+
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section id="actions" class="bg-info text-light">
+        <div class="container py-4 py-md-5">
+            <h1><i class="fa fa-mobile"></i> Upload (Mobile)</h1>
+            <form class="w-50" action="/api/upload-standard" method="post" enctype="multipart/form-data">
+                <div class="mb-3 mt-3">
+                    <label for="forms" class="form-label">Scan and upload your form pages by clicking "Choose
+                        Files"</label>
+                    <input class="form-control" type="file" id="forms" name="forms" multiple>
+                </div>
+                <button class="btn btn-primary" type="submit">Upload</button>
+            </form>
+
+        </div>
+    </section>
+</main>
+
+<%- include('../layouts/footer.ejs'); %>
+
+<!-- Bundled JS: Bootstrap, jQuery, Lodash -->
+<script src="scripts/bundle.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="scripts/placeholder.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<header>
+    <nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark">
+        <div class="container">
+
+            <a class="navbar-brand" href="/">
+                <img src="/images/favicon.ico" alt="logo" width="24" height="24" class="d-inline-block align-top">
+                Elly
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <% if (locals.view && view === 'user') { %>
+                    <!-- User's Navbar -->
+
+                    <% if (locals.active && active === 'edit') { %>
+
+                        <button id="fixPDF" class="btn btn-info me-3">Toggle: Fix PDF Position</button>
+
+                        <a id="openPDF" class="btn btn-primary" href="#" target="_blank">Open PDF in New Tab</a>
+
+                    <% } %>
+
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link <%= (locals.active === 'dashboard') ? 'active' : '' %>" href="/">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= (locals.active === 'records') ? 'active' : '' %>" href="/records">Records</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <%= (locals.active === 'payment') ? 'active' : '' %>" href="/payment">Payment</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Options
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item <%= (locals.active === 'settings') ? 'active' : '' %>"
+                                       href="/settings">Settings</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="/logout">Log out</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                <% } else { %>
+                    <!-- Visitor's Navbar -->
+
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link <%= (locals.active === 'contact') ? 'active' : '' %>"
+                               href="#">Contact</a>
+                        </li>
+                        <li class="nav-item ms-md-3 mb-3 mb-md-0">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#signupModal">
+                                Sign Up
+                            </button>
+                        </li>
+                        <li class="nav-item ms-md-3">
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#loginModal">
+                                Log In
+                            </button>
+                        </li>
+                    </ul>
+
+                <% } %>
+            </div>
+        </div>
+    </nav>
+</header>

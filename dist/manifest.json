@@ -1,0 +1,15 @@
+{
+  "name": "Sierra Bio Lab - Elly",
+  "short_name": "Elly",
+  "icons": [
+    {
+      "src": "dist/images/favicon.ico",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/?utm_source=a2hs",
+  "theme_color": "#f8b878",
+  "background_color": "#f8b878",
+  "display": "standalone"
+}

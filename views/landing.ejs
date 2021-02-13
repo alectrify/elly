@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <%- include('layouts/head.ejs'); %>
+
+    <!-- Home Specific Tags -->
+    <meta name="description" content="A tool for medical workers to easily store and manage patient data.">
+    <link rel="canonical" href="https://elly.sierrabiolab.com/"/>
+
+    <!-- Facebook: https://developers.facebook.com/docs/sharing/webmasters/ -->
+    <meta property="og:url" content="https://elly.sierrabiolab.com/">
+    <meta property="og:title" content="Sierra Bio Lab - Elly">
+    <meta property="og:description" content="A tool for medical workers to easily store and manage patient data.">
+    <meta property="og:type" content="website">
+    <!-- Insert preview image tag: https://ogp.me/ -->
+
+    <!-- Twitter: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@alectrify_co">
+    <meta name="twitter:creator" content="@alectrify_co">
+    <meta name="twitter:title" content="Sierra Bio Lab - Elly">
+    <meta name="twitter:description" content="A tool for medical workers to easily store and manage patient data.">
+    <!-- Insert preview image tag -->
+
+    <title>Sierra Bio Lab - Elly</title>
+</head>
+
+<body>
+<%- include('layouts/navbar'); %>
+
+<main>
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container text-center py-4 py-md-5">
+            <h1 class="display-5"><i class="fa fa-laptop-medical"></i> Elly</h1>
+            <p class="lead my-3">
+                A tool for medical workers to easily store and manage patient data.
+            </p>
+            <p class="lead mb-0">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#signupModal">Get Started</button>
+                <a class="btn btn-info" href="#principles">Learn more</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Principles Section -->
+    <section id="principles" class="bg-primary text-dark">
+        <div class="container py-4 py-md-5">
+            <h1>Principles</h1>
+
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h2>Modern</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse massa velit,
+                                eleifend condimentum magna ut, pretium hendrerit erat. Morbi nec est porta, iaculis
+                                sapien eu, ultrices arcu.
+                            </p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h2>Accessible</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse massa velit,
+                                eleifend condimentum magna ut, pretium hendrerit erat. Morbi nec est porta, iaculis
+                                sapien eu, ultrices arcu.
+                            </p>
+                        </div>
+
+                        <div class="col-md-4">
+                            <h2>Practical</h2>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse massa velit,
+                                eleifend condimentum magna ut, pretium hendrerit erat. Morbi nec est porta, iaculis
+                                sapien eu, ultrices arcu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <img src="images/idea.png" alt="Man with an idea" class="w-100">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="bg-info text-dark">
+        <div class="container py-4 py-md-5">
+            <h1>About</h1>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Our Company</h2>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin efficitur fringilla sapien sed
+                        posuere.
+                        Aenean arcu tellus, pellentesque id tristique eget, pretium vel metus. Mauris eu mi mauris.
+                        Fusce ac
+                        laoreet dui. Fusce vitae velit nunc.
+                    </p>
+                    <ul>
+                        <li>
+                            Lorem ipsum dolor sit amet
+                        </li>
+                        <li>
+                            Lorem ipsum dolor sit amet
+                        </li>
+                        <li>
+                            Lorem ipsum dolor sit amet
+                        </li>
+                    </ul>
+
+                    <h2>Our Mission</h2>
+                    <p>
+                        Vestibulum enim mauris, vehicula in ante ut, elementum tincidunt dui. Mauris vulputate malesuada
+                        mauris, hendrerit pellentesque tellus ultricies quis. Vivamus porttitor ullamcorper interdum.
+                        Sed blandit ipsum vel enim sollicitudin, quis facilisis magna aliquet.
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <img src="images/meeting.png" alt="Workers at a meeting" class="w-100">
+                </div>
+            </div>
+
+        </div>
+    </section>
+</main>
+
+<%- include('layouts/footer.ejs'); %>
+
+<!-- Failed Login Alert -->
+<% if (locals.attempt && attempt === 'fail') { %>
+    <div class="alert alert-danger alert-dismissible fade show fixed-top mt-3 ms-3 d-inline-block w-25" role="alert">
+        <strong>Login failed!</strong> Please try again.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+<!-- Sign Up Modal -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="signupModalLabel">Sign Up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="signupForm" action="/users" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" id="signupFirstName" class="form-control" name="firstName" placeholder="First Name" required>
+                        <label for="signupFirstName" class="form-label">First Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" id="signupLastName" class="form-control" name="lastName" placeholder="Last Name" required>
+                        <label for="signupLastName" class="form-label">Last Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="email" id="signupEmail" class="form-control" name="email" placeholder="Email" required>
+                        <label for="signupEmail" class="form-label">Email</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" id="signupPassword" class="form-control" name="password" placeholder="Password" required>
+                        <label for="signupPassword" class="form-label">Password</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-lg btn-primary w-100" form="signupForm">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Log In Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loginModalLabel">Log In</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm" action="/login" method="post">
+                    <div class="form-floating mb-3">
+                        <input type="text" id="loginEmail" class="form-control" name="email" placeholder="Email" required>
+                        <label for="loginEmail" class="form-label">Email</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" id="loginPassword" class="form-control" name="password" placeholder="Password" required>
+                        <label for="loginPassword" class="form-label">Password</label>
+                        <a class="link-danger text-decoration-none" href="#">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-lg btn-info w-100" form="loginForm">Log In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bundled JS: Bootstrap, jQuery, Lodash -->
+<script src="scripts/bundle.js"></script>
+
+<!-- Custom JavaScript -->
+<script src="scripts/placeholder.js"></script>
+</body>
+</html>
