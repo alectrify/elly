@@ -13,8 +13,6 @@ $(document).ready(() => {
 
             let clientIdCounts = {};
 
-            console.log(records);
-
             records.forEach((record, index) => {
                 // If record is not in range for current page, do not display.
                 if (index < RANGE_MIN || index > RANGE_MAX) {

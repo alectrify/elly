@@ -13,6 +13,7 @@ $(document).ready(function () {
     $('#openPDF').attr('href', `/batches/pdf/${id}/${batchNum}/${pageNum}`);
     $('input[type=number]').css('background-color', '#fff3cd');
     $('input[type=text]').css('background-color', '#fff3cd');
+    $('input[type=email]').css('background-color', '#fff3cd');
 
     hasInsurance.click(function () {
         if ($(this).is(':checked')) {

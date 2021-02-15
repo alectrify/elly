@@ -189,7 +189,7 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                                 });
 
                                 let paraText = paraArray.join(' ').trim();
-                                const keywords = [
+                                const junkWords = [
                                     'symptoms',
                                     'result',
                                     'language',
@@ -199,16 +199,20 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                                     'fatigue',
                                     'vomiting',
                                     'facility',
-                                    'patient',
                                     'doctor'
                                 ];
+                                const keywords = [
+                                    'ssn',
+                                    'driver'
+                                ]
+                                const keywordsRegExp = new RegExp(keywords.join('|'), 'i');
 
                                 let filteredPar = paraText;
                                 filteredPar = filteredPar.replace(/(\so\s)+/i, '');
                                 filteredPar = filteredPar.replace(/^(o\s)+/i, '');
-                                filteredPar = filteredPar.replace(new RegExp(keywords.join('|'), 'i'), '');
+                                filteredPar = filteredPar.replace(new RegExp(junkWords.join('|'), 'i'), '');
 
-                                if (paraText.length > 1 && paraText === filteredPar) {
+                                if (paraText.length > 1 && (paraText.match(keywordsRegExp) != null || paraText === filteredPar)) {
                                     textArray.push(paraText);
                                 }
                             });

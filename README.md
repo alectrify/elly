@@ -1,3 +1,6 @@
+
+[//]: # (This file is in Markdown syntax. Use a Markdown editor like https://dillinger.io/ or view the GitHub repository to read this in better formatting.)
+
 # ⚕️ elly
 A tool for medical workers to easily store and manage patient data.
 
@@ -11,15 +14,7 @@ A tool for medical workers to easily store and manage patient data.
 
 ### Initialization & Setup
 1. Create a `.env` file to hold environment variables. ([dotenv module](https://www.npmjs.com/package/dotenv))
-2. Edit the name of your database by editing the `DB_NAME` constant in `index.js`.
-3. Edit metadata information for SEO and data accuracy in:
-   * `package.json`
-   * `README.md` 
-   * `dist/manifest.json`
-   * `dist/robots.txt`
-   * `dist/sitemap.xml`
-   * `views/landing.ejs`
-4. Run `npm install` to install packages.
+2. Run `npm install` to install packages.
 
 ## 🎓 Usage/Workflow Details
 ### Development Process
@@ -47,9 +42,10 @@ Run `npm run build:js` to compile (w/ webpack) JavaScript libraries from the `sr
 ### Deployment
 1. Create a MongoDB Atlas database and collection and copy your connection URI. 
 2. Create a Heroku app and enable automatic deployment to your repository.
-3. Set environment variables for your Heroku app
+3. Set environment variables for your Heroku app:
    1. MONGO_URI - Your MongoDB Atlas connection URI.
-   2. SESSION_SECRET - Express session secret
+   2. GOOGLE_APPLICATION_CREDENTIALS - Development-7ee81f036c81.json
+   3. SESSION_SECRET - Express session secret
 
 ## ⚓ Current Release Details
 **Bootstrap CSS** v5.0.0  
@@ -58,6 +54,7 @@ Run `npm run build:js` to compile (w/ webpack) JavaScript libraries from the `sr
 
 ### Packages Included
 * @fortawesome/fontawesome-free - Font Awesome Icons
+* @google-cloud/vision - OCR
 * autoprefixer - adding vendor prefixes to css
 * bcrypt - password-hashing
 * bootstrap & @popperjs/core - styling
@@ -74,17 +71,20 @@ Run `npm run build:js` to compile (w/ webpack) JavaScript libraries from the `sr
 * lodash - coding utility
 * method-override - enabling methods for the client
 * mongoose - database functionality
+* multer - processing file uploads in the back-end
 * nodemon - development quality of life
+* pdf-lib - PDF processing in back-end
+* pdfjs-dist - Rendering PDF's on front-end
 * postcss & postcss-cli - CSS postprocessing (ex: autoprefixer)
 * sass - customizing and compiling Bootstrap
+* sharp - image processing for images uploaded on mobile
+* stripe - payment processing (work in progress)
 * validator - formatting validation
 * webpack & webpack-cli - JS postprocessing
+* xlsx - Excel spreadsheet processing in back-end
 
 ## 📅 Future Release Plans
-* Different ports for other styling frameworks like Tailwind
 * E-mail encryption and forgot password functionality
-* More detailed starter code
-* Additional example pages
 
 ## 🗒️ Additional Resources
 ### Best Practices

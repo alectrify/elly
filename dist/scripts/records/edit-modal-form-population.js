@@ -5,7 +5,7 @@ editModal.addEventListener('show.bs.modal', function (event) {
     let form = $('#editForm');
 
     form.empty();
-    form.attr('action', `/records/${recordID}`);
+    form.attr('action', `/records/${recordID}?_method=PUT`);
 
     function addSingleInput(fieldName, fieldTitle, value, type='text') {
         form.append(`<div class="mb-3">

@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const mongoose = require('mongoose');
 
 const recordSchema = new mongoose.Schema({
@@ -69,7 +70,7 @@ recordSchema.virtual('reportData').set(function (data) {
     const firstName = data.name.substring(0, data.name.indexOf(' '));
     const lastName = data.name.substring(data.name.indexOf(' ') + 1);
 
-    this.set({
+    _.assign(this.patientData, {
         patientID: data.patientID,
         clientGroup: data.clientGroup,
         labID: data.labID,

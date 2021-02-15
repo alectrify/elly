@@ -11,7 +11,6 @@ let junkWords = [
     'phone',
     'signature',
     'birth',
-    'bith',
     'day',
     'yes',
     'please',
@@ -66,18 +65,15 @@ let shorterFields = [middleName, physician, address, city, state];
 fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
     .then(response => response.json())
     .then(response => {
-        // let allFields = numeric.concat(barcode, address, email, insuranceNum, driverLicense, alpha);
-
         let record = response;
-
         console.log(record);
 
         let isNewForm = record.isNewForm;
         let textArray = record.ocrResults;
 
         function addSuggestion(element, text) {
-            text = text.replaceAll(junkRegExp, '');
-            text = text.replaceAll(/[,']/g, '');
+            text = text.replaceAll(junkRegExp, ''); // Filter out junk words
+            text = text.replaceAll(/[,']/g, ''); // Remove unwanted characters
 
             if (numeric.includes(element)) {
                 text = text.replaceAll(/[A-Za-z]/g, '');
@@ -87,7 +83,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 }
             }
 
-            if (alpha.includes(element)) {
+            else if (alpha.includes(element)) {
                 text = text.replaceAll(/[0-9.]/g, '');
                 text = text.trim();
                 if (text.match(/[A-Za-z]/g) == null) {
@@ -95,24 +91,27 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 }
             }
 
+            // Filter out short suggestions for long fields
             if (!shorterFields.includes(element)) {
                 if (text.length < 3) {
                     return;
                 }
             }
 
+            // Filter out long suggestions for state
             if (element === state) {
                 if (text.length > 2) {
                     return;
                 }
             }
 
+            // Filter out tiny suggestions
             if (text.length < 2) {
                 return;
             }
 
+            // If this suggestions already exists for this field, it is a duplicate, so do not add it.
             let exists = false;
-
             element.next().children().slice(1).each(function () {
                 if ($(this).text() === text) {
                     exists = true;
@@ -122,6 +121,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             if (!exists) {
                 let button = $(`<button type="button" class="btn btn-sm btn-info rounded-pill mx-1 my-2"><i class="bi bi-plus"></i>${text}</button>`);
 
+                // Hide suggestion after it is added by the user
                 button.click(function () {
                     element.val(element.val() + text + ' ');
                     $(`button:contains('${text}')`).hide();
@@ -131,6 +131,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             }
         }
 
+        // Add each word in a line as a suggestion
         function addSuggestions(element, line) {
             if (!line) {
                 return;
@@ -141,6 +142,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             });
         }
 
+        // If any words have a match for a certain regex, set that element to that value
         function changeValIfMatch(element, lineArray, regex) {
             lineArray.forEach(function (line) {
                 if (!line) {
@@ -154,6 +156,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             })
         }
 
+        // For checking checkboxes based off of X's
         function checkbox(label) {
             label = label.toLowerCase();
             let element;
@@ -202,13 +205,14 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
 
         // Standardized form
         if (isNewForm) {
+            // No default checkboxes
             $('#hasInsurance').prop('checked', false);
             $('#none').prop('checked', false);
 
             textArray.forEach(function(line, index) {
                 let line01 = textArray[index - 2];
-                let line0 = textArray[index - 1];
-                let line2 = textArray[index + 1];
+                let line0 = textArray[index - 1]; // previous line
+                let line2 = textArray[index + 1]; // next line
                 let line3 = textArray[index + 2];
                 let line4 = textArray[index + 3];
 
@@ -355,7 +359,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                     return;
                 }
 
-                if (line.match(/Collection Date/) != null) {
+                if (line.match(/collection date/i) != null) {
                     addSuggestions(collectDate, line01);
                     addSuggestions(collectDate, line0);
                     addSuggestions(collectDate, line);
@@ -363,9 +367,11 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                     changeValIfMatch(collectDate, [line01, line0, line, line2], /[0-9]{1,2}[-\s.\/][0-9]{1,2}[-\s.\/][0-9]{2,4}/g);
                 }
 
-                if (line.match(/Collection Location/) != null) {
+                if (line.match(/collection location/i) != null) {
                     addSuggestions(collectPlace, line01);
                     addSuggestions(collectPlace, line0);
+                    addSuggestions(collectPlace, line);
+                    addSuggestions(collectPlace, line2);
                 }
 
                 if (line.match(/CA/) != null) {
