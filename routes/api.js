@@ -256,7 +256,7 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
             }
 
             // Populate reportData
-            if (record.collectionDate !== '') {
+            if (record.collectionDate.match(/[0-9]{1,4}[-\s.\/][0-9]{1,2}[-\s.\/][0-9]{2,4}/g) == null) {
                 const testDate = XLSX.SSF.parse_date_code(parseInt(record.collectionDate));
                 record.collectionDate = new Date(testDate.y, testDate.m - 1, testDate.d).toISOString().substring(0, 10);
             }
