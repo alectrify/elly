@@ -124,5 +124,5 @@ app.use((req, res) => {
 /* ---------- LAUNCH ---------- */
 app.listen(PORT, () => {
     console.log(chalk.blue(`🚀 Server running at http://localhost:${PORT}/`));
-    console.log(chalk.green('📝 Setup and details for developing this project: https://github.com/AdoryVo/node-website-template\n'));
+    console.log(chalk.green('📝 Setup and details for developing this project are in README.md.\n'));
 });
