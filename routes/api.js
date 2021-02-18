@@ -25,6 +25,7 @@ const EXCEL_MIMETYPES = [
     'application/vnd.ms-excel'
 ];
 const LOGGING = true;
+const NEW_FORM_BATCH_CAPACITY = 6; // Records per new form batch - Keep this even
 const PDF_BATCH_CAPACITY = 5;
 
 /* ---------- FUNCTIONS ---------- */
@@ -112,7 +113,7 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                                 }
                             });
 
-                            const paraText = paraArray.join(' ');
+                            const paraText = paraArray.join(' ').trim();
 
                             if (paraText.length > 0) {
                                 textArray.push(paraText.trim());
@@ -134,8 +135,10 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
             res.json(record);
         } else {
             // Random form processing
-            PDFBatch.findOne({id, batchNum}, 'pdf', async (err, batch) => {
+            PDFBatch.findOne({id, batchNum}, 'pdf newForms', async (err, batch) => {
                 if (err) throw err;
+
+                const pageNumArray = (batch.newForms) ? [2*pageNum - 1, 2*pageNum] : [pageNum]; // For new forms, 1 should be [1, 2], 2 should be [3, 4], etc.
 
                 // Google Vision API
                 const inputConfig = {
@@ -150,7 +153,7 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                     features: features,
                     // Annotate the current page. (max 5 pages in one request)
                     // First page starts at 1, and not 0. Last page is -1.
-                    pages: [pageNum],
+                    pages: pageNumArray,
                 };
 
                 // Add each `AnnotateFileRequest` object to the batch request.
@@ -189,31 +192,38 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                                 });
 
                                 let paraText = paraArray.join(' ').trim();
-                                const junkWords = [
-                                    'symptoms',
-                                    'result',
-                                    'language',
-                                    'other',
-                                    'office',
-                                    'travel',
-                                    'fatigue',
-                                    'vomiting',
-                                    'facility',
-                                    'doctor'
-                                ];
-                                const keywords = [
-                                    'ssn',
-                                    'driver'
-                                ]
-                                const keywordsRegExp = new RegExp(keywords.join('|'), 'i');
 
-                                let filteredPar = paraText;
-                                filteredPar = filteredPar.replace(/(\so\s)+/i, '');
-                                filteredPar = filteredPar.replace(/^(o\s)+/i, '');
-                                filteredPar = filteredPar.replace(new RegExp(junkWords.join('|'), 'i'), '');
+                                if (batch.newForms) {
+                                    if (paraText.length > 0) {
+                                        textArray.push(paraText.trim());
+                                    }
+                                } else {
+                                    const junkWords = [
+                                        'symptoms',
+                                        'result',
+                                        'language',
+                                        'other',
+                                        'office',
+                                        'travel',
+                                        'fatigue',
+                                        'vomiting',
+                                        'facility',
+                                        'doctor'
+                                    ];
+                                    const keywords = [
+                                        'ssn',
+                                        'driver'
+                                    ]
+                                    const keywordsRegExp = new RegExp(keywords.join('|'), 'i');
 
-                                if (paraText.length > 1 && (paraText.match(keywordsRegExp) != null || paraText === filteredPar)) {
-                                    textArray.push(paraText);
+                                    let filteredPar = paraText;
+                                    filteredPar = filteredPar.replace(/(\so\s)+/i, '');
+                                    filteredPar = filteredPar.replace(/^(o\s)+/i, '');
+                                    filteredPar = filteredPar.replace(new RegExp(junkWords.join('|'), 'i'), '');
+
+                                    if (paraText.length > 1 && (paraText.match(keywordsRegExp) != null || paraText === filteredPar)) {
+                                        textArray.push(paraText);
+                                    }
                                 }
                             });
                         });
@@ -225,6 +235,7 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
                     batchNum,
                     pageNum,
                     ocrResults: textArray,
+                    isNewForm: Boolean(batch.newForms)
                 });
 
                 res.json(record);
@@ -282,7 +293,7 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
 
         const pageCount = srcDoc.getPageCount();
         const pageNumArray = srcDoc.getPageIndices();
-        const chunkSize = PDF_BATCH_CAPACITY;
+        const chunkSize = (req.body.isNewForm === 'true') ? NEW_FORM_BATCH_CAPACITY : PDF_BATCH_CAPACITY;
         const modelID = new mongoose.Types.ObjectId();
 
         for (let i = 0; i < pageCount; i += chunkSize) {
@@ -303,7 +314,8 @@ router.post('/upload', upload.single('uploadFile'), async (req, res) => {
                 id: modelID,
                 batchNum: i / chunkSize,
                 pageCount: thisChunkSize,
-                pdf: Buffer.from(pdfBytes)
+                pdf: Buffer.from(pdfBytes),
+                newForms: req.body.isNewForm === 'true'
             });
         }
 

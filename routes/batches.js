@@ -106,7 +106,7 @@ router.get('/pageCount/:id/:batch', (req, res) => {
     const id = mongoose.Types.ObjectId(req.params.id);
     const batchNum = parseInt(req.params.batch);
 
-    PDFBatch.findOne({id, batchNum}, 'pageCount', (err, batch) => {
+    PDFBatch.findOne({id, batchNum}, 'pageCount newForms', (err, batch) => {
         if (err) throw err;
 
         res.json(batch);
@@ -138,18 +138,22 @@ router.get('/pdf/:id/:batch/:page', (req, res) => {
     const batchNum = parseInt(req.params.batch);
     const pageNum = parseInt(req.params.page);
 
-    PDFBatch.findOne({id, batchNum}, 'pdf', async (err, batch) => {
+    PDFBatch.findOne({id, batchNum}, 'pdf newForms', async (err, batch) => {
         if (err) throw err;
 
         const srcDoc = await PDFDocument.load(batch.pdf);
         const thisDoc = await PDFDocument.create();
-        const [page] = await thisDoc.copyPages(srcDoc, [pageNum - 1]);
-        thisDoc.addPage(page);
+        const pageNums = (batch.newForms) ? [(pageNum - 1) * 2, (pageNum - 1) * 2 + 1] : [pageNum - 1];
+
+        const copiedPages = await thisDoc.copyPages(srcDoc, pageNums);
+
+        copiedPages.forEach((page) => {
+            thisDoc.addPage(page);
+        });
 
         const pdfBytes = await thisDoc.save();
 
         res.set({
-            'Content-Disposition': `attachment; filename=record.pdf`,
             'Content-Type': 'application/pdf'
         });
         res.send(Buffer.from(pdfBytes));

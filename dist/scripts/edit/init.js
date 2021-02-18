@@ -2,6 +2,7 @@ const urlSections = window.location.pathname.split('/');
 const id = urlSections[urlSections.length - 3];
 const batchNum = urlSections[urlSections.length - 2];
 let pageNum = urlSections[urlSections.length - 1];
+let currentPageJustProcessed = false;
 
 const hasInsurance = $('#hasInsurance');
 const insuranceFields = $('#insuranceFields');
@@ -40,7 +41,7 @@ $(document).ready(function () {
     });
 
     $('form').submit(function () {
-        $( "input[type=text]" ).val(function( index, value ) {
+        $('input[type=text]').val(function( index, value ) {
             return value.trim();
         });
     });

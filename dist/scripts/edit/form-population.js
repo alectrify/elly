@@ -26,7 +26,9 @@ let junkWords = [
     'your',
     'ssn',
     'details',
-    'if',
+    'insured',
+    'patient',
+    'addr',
     'policy',
     `policy's`,
     'npi',
@@ -66,8 +68,6 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
     .then(response => response.json())
     .then(response => {
         let record = response;
-        console.log(record);
-
         let isNewForm = record.isNewForm;
         let textArray = record.ocrResults;
 

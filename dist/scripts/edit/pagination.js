@@ -17,29 +17,55 @@ $(document).ready(() => {
                 const pagination = $('#pagination');
                 pagination.empty();
 
-                // Add navigation button for each page
-                for (let i = 1; i <= pageCount; i++) {
-                    await fetch(`/records/${id}/${newBatchNum}/${i}`)
+                if (batch.newForms) {
+                    fetch(`/records/${id}/${newBatchNum}`)
                         .then((response) => response.json())
-                        .then((batch) => {
-                            let tooltip = 'Not Completed';
-                            let color = i === parseInt(pageNum) ? 'info' : 'primary';
-                            if (batch && batch.hasOwnProperty('patientData') && batch.patientData.hasOwnProperty('barcode')) {
-                                const patientData = batch.patientData;
-                                tooltip = `${patientData.barcode}: ${patientData.firstName} ${patientData.lastName}`;
+                        .then((records) => {
+                            if (newBatchNum % 2 == 0) {
+                                for (let i = 1; i <= pageCount / 2; i++) {
+                                    const record = records[i - 1];
+                                    let tooltip = 'Not Completed';
+                                    let color = i === parseInt(pageNum) ? 'info' : 'primary';
 
-                                color = i === parseInt(pageNum) ? 'info' : 'success';
-                            }
+                                    console.log(record);
 
-                            // If standardized form, simply render page and do not redirect
-                            if (!batch || batch.hasOwnProperty('isNewForm') || !batch.hasOwnProperty('patientData')) {
-                                pagination.append(`<button id="pg${i}" class="btn btn-${color} mt-2 me-2" 
-                                    onclick="renderPDF(${i})"">Page ${i} - ${tooltip}</button>`);
-                            } else {
-                                pagination.append(`<a id="pg${i}" class="btn btn-${color} mt-2 me-2" 
-                                    href="/edit/${id}/${newBatchNum}/${i}">Page ${i} - ${tooltip}</a>`);
+                                    if (record && record.hasOwnProperty('patientData')) {
+                                        const patientData = record.patientData;
+                                        tooltip = `${patientData.barcode}: ${patientData.firstName} ${patientData.lastName}`;
+
+                                        color = i === parseInt(pageNum) ? 'info' : 'success';
+                                    }
+
+                                    const isCurrentForm = newBatchNum === parseInt(batchNum) && i === parseInt(pageNum);
+                                    let dest1 = (isCurrentForm) ? `onclick="renderPDF(1)"` : `href="/edit/${id}/${newBatchNum}/${i}"`;
+                                    let dest2 = (isCurrentForm) ? `onclick="renderPDF(2)"` : `href="/edit/${id}/${newBatchNum}/${i}"`;
+
+                                    pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
+                                    ${dest1}>Form ${i} - ${tooltip}</a>`);
+
+                                    pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
+                                    ${dest2}>Form ${i} - ${tooltip} (2)</a>`);
+                                }
                             }
                         });
+                } else {
+                    for (let i = 1; i <= pageCount; i++) {
+                        await fetch(`/records/${id}/${newBatchNum}/${i}`)
+                            .then((response) => response.json())
+                            .then((record) => {
+                                let tooltip = 'Not Completed';
+                                let color = i === parseInt(pageNum) ? 'info' : 'primary';
+                                if (record && record.hasOwnProperty('patientData')) {
+                                    const patientData = record.patientData;
+                                    tooltip = `${patientData.barcode}: ${patientData.firstName} ${patientData.lastName}`;
+
+                                    color = i === parseInt(pageNum) ? 'info' : 'success';
+                                }
+
+                                pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
+                                    href="/edit/${id}/${newBatchNum}/${i}">Page ${i} - ${tooltip}</a>`);
+                            });
+                    }
                 }
             });
     });

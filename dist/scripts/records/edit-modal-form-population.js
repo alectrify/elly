@@ -55,6 +55,7 @@ editModal.addEventListener('show.bs.modal', function (event) {
                 ['paymentReceivedDate', 'Payment Received Date', reportData.paymentReceivedDate]
             ], ['number', 'date']);
 
-            $('input').css('background-color', '#fff3cd');
+            $('input[type=date]').css('background-color', '#fff3cd');
+            $('input[type=text]').css('background-color', '#fff3cd');
         });
 });

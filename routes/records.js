@@ -15,7 +15,8 @@ const Record = require('../models/Record');
 
 /* ---------- CONSTANTS ---------- */
 const LOGGING = true;
-const PDF_BATCH_CAPACITY = 5;
+const NEW_FORM_BATCH_CAPACITY = 6; // Records per new form batch - Keep this even
+const PDF_BATCH_CAPACITY = 5; // Records per batch
 
 /* ---------- FUNCTIONS ---------- */
 function logCall(route) {
@@ -134,8 +135,6 @@ router.post('/xlsx-range', (req, res) => {
         });
 
         const copies = records.map(record => JSON.parse(JSON.stringify(record.patientData)));
-        const copy = records[0].patientData;
-        console.log(copies[0]);
 
         const workbook = XLSX.utils.book_new();
         let worksheet = XLSX.utils.json_to_sheet(copies);
@@ -152,6 +151,71 @@ router.post('/xlsx-range', (req, res) => {
     });
 });
 
+// Get a specific record.
+router.get('/:id', (req, res) => {
+    logCall(`${req.method} ${req.route.path}`);
+
+    Record.findById(req.params.id, (err, record) => {
+        if (err) throw err;
+
+        res.json(record);
+    });
+});
+
+// Edit a specific record.
+router.put('/:id', (req, res) => {
+    logCall(`${req.method} ${req.route.path}`);
+
+    Record.findById(req.params.id, (err, record) => {
+        if (err) throw err;
+        record.reportData = req.body;
+        record.save();
+
+        res.redirect('/records');
+    });
+});
+
+// Delete a specific record.
+router.delete('/:id', (req, res) => {
+    logCall(`${req.method} ${req.route.path}`);
+
+    Record.findByIdAndDelete(req.params.id, (err) => {
+        if (err) throw err;
+
+        res.redirect('/records');
+    });
+});
+
+// Get a specific batch.
+router.get('/:id/:batch', (req, res) => {
+    logCall(`${req.method} ${req.route.path}`);
+
+    const id = mongoose.Types.ObjectId(req.params.id);
+    const batchNum = parseInt(req.params.batch);
+
+    Record.find({id, batchNum}, (err, records) => {
+        if (err) throw err;
+
+        res.json(records);
+    });
+});
+
+
+// Get a specific record
+router.get('/:id/:batch/:page', (req, res) => {
+    logCall(`${req.method} ${req.route.path}`);
+
+    const id = mongoose.Types.ObjectId(req.params.id);
+    const batchNum = parseInt(req.params.batch);
+    const pageNum = parseInt(req.params.page);
+
+    Record.findOne({id, batchNum, pageNum}, (err, record) => {
+        if (err) throw err;
+
+        res.json(record);
+    });
+});
+
 // Create a record.
 router.post('/:id/:batch/:page', (req, res) => {
     logCall(`${req.method} ${req.route.path}`);
@@ -159,13 +223,9 @@ router.post('/:id/:batch/:page', (req, res) => {
     const id = mongoose.Types.ObjectId(req.params.id);
     const batchNum = parseInt(req.params.batch);
     const pageNum = parseInt(req.params.page);
-    let isNewForm = false;
 
     Record.findOne({id, batchNum, pageNum}, (err, record) => {
         if (err) throw error;
-
-        const today = new Date();
-        today.toISOString().substring(0, 10);
 
         if (Array.isArray(req.body.symptoms)) {
             req.body.symptoms = req.body.symptoms.join(',');
@@ -208,77 +268,33 @@ router.post('/:id/:batch/:page', (req, res) => {
 
         record.save();
 
+        // Check whether to redirect to records table or next page to edit
+        let nextPageNum;
+        let nextBatchNum;
+
         if (record.isNewForm) {
-            isNewForm = true;
+            nextPageNum = pageNum % (NEW_FORM_BATCH_CAPACITY / 2) + 1;
+            nextBatchNum = (pageNum * 2 === NEW_FORM_BATCH_CAPACITY) ? batchNum + 1 : batchNum;
+        } else {
+            nextPageNum = pageNum % PDF_BATCH_CAPACITY + 1;
+            nextBatchNum = (pageNum === PDF_BATCH_CAPACITY) ? batchNum + 1 : batchNum;
         }
-    });
 
-    // Check whether to redirect to records table or next page to edit
-    const nextPageNum = (pageNum === PDF_BATCH_CAPACITY) ? 1 : pageNum + 1;
-    const nextBatchNum = (pageNum === PDF_BATCH_CAPACITY) ? batchNum + 1 : batchNum;
+        PDFBatch.findOne({id, batchNum: nextBatchNum}, 'pageCount newForms', (err, batch) => {
+            if (err) throw err;
 
-    PDFBatch.findOne({id, batchNum: nextBatchNum}, 'pageCount', (err, batch) => {
-        if (err) throw err;
-
-        if (batch) {
-            if (nextPageNum <= batch.pageCount && !isNewForm) {
-                res.redirect(`/edit/${id}/${nextBatchNum}/${nextPageNum}`);
+            if (batch) {
+                if (batch.newForms && nextPageNum * 2 > batch.pageCount) {
+                    res.redirect('/records');
+                } else if (nextPageNum <= batch.pageCount) {
+                    res.redirect(`/edit/${id}/${nextBatchNum}/${nextPageNum}`);
+                } else {
+                    res.redirect('/records');
+                }
             } else {
                 res.redirect('/records');
             }
-        } else {
-            res.redirect('/records');
-        }
-    });
-});
-
-// Get a specific record.
-router.get('/:id', (req, res) => {
-    logCall(`${req.method} ${req.route.path}`);
-
-    Record.findById(req.params.id, (err, record) => {
-        if (err) throw err;
-
-        res.json(record);
-    });
-});
-
-// Edit a specific record.
-router.put('/:id', (req, res) => {
-    logCall(`${req.method} ${req.route.path}`);
-
-    Record.findById(req.params.id, (err, record) => {
-        if (err) throw err;
-        record.reportData = req.body;
-        record.save();
-
-        res.redirect('/records');
-    });
-});
-
-// Delete a specific record.
-router.delete('/:id', (req, res) => {
-    logCall(`${req.method} ${req.route.path}`);
-
-    Record.findByIdAndDelete(req.params.id, (err) => {
-        if (err) throw err;
-
-        res.redirect('/records');
-    });
-});
-
-// Get a specific record
-router.get('/:id/:batch/:page', (req, res) => {
-    logCall(`${req.method} ${req.route.path}`);
-
-    const id = mongoose.Types.ObjectId(req.params.id);
-    const batchNum = parseInt(req.params.batch);
-    const pageNum = parseInt(req.params.page);
-
-    Record.findOne({id, batchNum, pageNum}, (err, record) => {
-        if (err) throw err;
-
-        res.json(record);
+        });
     });
 });
 

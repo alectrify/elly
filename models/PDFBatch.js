@@ -5,6 +5,7 @@ const pdfBatchSchema = new mongoose.Schema({
     batchNum: Number,
     pageCount: Number,
     pdf: Buffer,
+    newForms: Boolean,
     date: {
         type: Date,
         default: Date.now
