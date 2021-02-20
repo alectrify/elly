@@ -38,5 +38,3 @@ function renderPDF(pg) {
             console.error(reason);
         });
 }
-
-renderPDF(pageNum);

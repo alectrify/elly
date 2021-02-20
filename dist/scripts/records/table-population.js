@@ -3,15 +3,7 @@ $(document).ready(() => {
         .then((response) => response.json())
         .then((records) => {
             let pageCount = Math.ceil(records.length / MAX_ROWS);
-
-            // Pagination
-            $('.paginationNav').prepend(`<p>Total record count: ${records.length}<br>Max records per page: ${MAX_ROWS}</p>`)
-
-            for (let i = 1; i <= pageCount; i++) {
-                $(`<li class="page-item ${(i === pageNum) ? 'active' : ''}"><a class="page-link" href="/records/page/${i}">${i}</a></li>\n`).insertBefore('.next');
-            }
-
-            let clientIdCounts = {};
+            let validRecordCount = records.length;
 
             records.forEach((record, index) => {
                 // If record is not in range for current page, do not display.
@@ -25,12 +17,16 @@ $(document).ready(() => {
                     /* Add Report Data */
                     let reportData = record.reportData;
 
+                    if (reportData.name === 'undefined undefined') {
+                        validRecordCount--;
+                        return;
+                    }
+
                     for (const [key, value] of Object.entries(reportData)) {
                         if (key === 'patientID') {
                             if (reportData.patientID === '') {
                                 newRow.append(`<td class="text-warning"><i class="bi bi-patch-question-fill" title="No patient ID specified"></i></td>`);
                             } else {
-                                clientIdCounts[reportData.patientID] = (clientIdCounts.hasOwnProperty(reportData.patientID)) ? clientIdCounts[reportData.patientID] + 1 : 1;
                                 newRow.append(`<td>${value}</td>`);
                             }
                         } else if (key === 'paymentReceivedAmount' && value !== '') {
@@ -70,11 +66,11 @@ $(document).ready(() => {
                 }
             });
 
-            for (const [key, value] of Object.entries(clientIdCounts)) {
-                if (value > 1) {
-                    $(`td:contains('${key}')`).append(' <i class="bi bi-exclamation-triangle-fill text-danger" title="Duplicate ID exists"></i>');
-                }
-            }
+            // Pagination
+            $('.paginationNav').prepend(`<p>Total record count: ${validRecordCount}<br>Max records per page: ${MAX_ROWS}</p>`);
 
+            for (let i = 1; i <= pageCount; i++) {
+                $(`<li class="page-item ${(i === pageNum) ? 'active' : ''}"><a class="page-link" href="/records/page/${i}">${i}</a></li>\n`).insertBefore('.next');
+            }
         });
 });

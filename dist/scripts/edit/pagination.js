@@ -17,35 +17,35 @@ $(document).ready(() => {
                 const pagination = $('#pagination');
                 pagination.empty();
 
+                console.log(newBatchNum);
+
                 if (batch.newForms) {
                     fetch(`/records/${id}/${newBatchNum}`)
                         .then((response) => response.json())
                         .then((records) => {
-                            if (newBatchNum % 2 == 0) {
-                                for (let i = 1; i <= pageCount / 2; i++) {
-                                    const record = records[i - 1];
-                                    let tooltip = 'Not Completed';
-                                    let color = i === parseInt(pageNum) ? 'info' : 'primary';
+                            for (let i = 1; i <= pageCount / 2; i++) {
+                                const isCurrentForm = newBatchNum === parseInt(batchNum) && i === parseInt(pageNum);
+                                const record = records[i - 1];
+                                let tooltip = 'Not Completed';
+                                let color = isCurrentForm ? 'info' : 'primary';
 
-                                    console.log(record);
+                                console.log(record);
 
-                                    if (record && record.hasOwnProperty('patientData')) {
-                                        const patientData = record.patientData;
-                                        tooltip = `${patientData.barcode}: ${patientData.firstName} ${patientData.lastName}`;
+                                if (record && record.hasOwnProperty('patientData')) {
+                                    const patientData = record.patientData;
+                                    tooltip = `${patientData.barcode}: ${patientData.firstName} ${patientData.lastName}`;
 
-                                        color = i === parseInt(pageNum) ? 'info' : 'success';
-                                    }
+                                    color = i === parseInt(pageNum) ? 'info' : 'success';
+                                }
 
-                                    const isCurrentForm = newBatchNum === parseInt(batchNum) && i === parseInt(pageNum);
-                                    let dest1 = (isCurrentForm) ? `onclick="renderPDF(1)"` : `href="/edit/${id}/${newBatchNum}/${i}"`;
-                                    let dest2 = (isCurrentForm) ? `onclick="renderPDF(2)"` : `href="/edit/${id}/${newBatchNum}/${i}"`;
+                                let dest1 = (isCurrentForm) ? `onclick="renderPDF(${parseInt(pageNum) * 2 - 1})"` : `href="/edit/${id}/${newBatchNum}/${i}"`;
+                                let dest2 = (isCurrentForm) ? `onclick="renderPDF(${parseInt(pageNum) * 2})"` : `href="/edit/${id}/${newBatchNum}/${i}"`;
 
-                                    pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
+                                pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
                                     ${dest1}>Form ${i} - ${tooltip}</a>`);
 
-                                    pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
+                                pagination.append(`<a class="btn btn-${color} mt-2 me-2" 
                                     ${dest2}>Form ${i} - ${tooltip} (2)</a>`);
-                                }
                             }
                         });
                 } else {

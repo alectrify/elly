@@ -106,7 +106,6 @@ router.get('/ocr/:id/:batch/:page', (req, res) => {
 
                                 // Removing invalid characters
                                 let replaced_word_text = String(wordText);
-                                replaced_word_text = replaced_word_text.replace(/[^\x20-\x7E]/g, '');
 
                                 if (word.confidence > 0.5 && replaced_word_text.length > 0) {
                                     paraArray.push(replaced_word_text);

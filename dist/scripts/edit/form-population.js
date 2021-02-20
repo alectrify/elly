@@ -81,9 +81,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 if (text.match(/[0-9]/g) == null) {
                     return;
                 }
-            }
-
-            else if (alpha.includes(element)) {
+            } else if (alpha.includes(element)) {
                 text = text.replaceAll(/[0-9.]/g, '');
                 text = text.trim();
                 if (text.match(/[A-Za-z]/g) == null) {
@@ -161,7 +159,7 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
             label = label.toLowerCase();
             let element;
 
-            switch(label) {
+            switch (label) {
                 case 'sore throat':
                     element = $('#soreThroat');
                     break;
@@ -205,11 +203,13 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
 
         // Standardized form
         if (isNewForm) {
+            renderPDF(parseInt(pageNum) * 2 - 1);
+
             // No default checkboxes
             $('#hasInsurance').prop('checked', false);
             $('#none').prop('checked', false);
 
-            textArray.forEach(function(line, index) {
+            textArray.forEach(function (line, index) {
                 let line01 = textArray[index - 2];
                 let line0 = textArray[index - 1]; // previous line
                 let line2 = textArray[index + 1]; // next line
@@ -220,128 +220,95 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
                 if (index === 0) {
                     if (line.length > 4) {
                         barcode.val(line);
-                    }
-                    else {
+                    } else {
                         barcode.val(line2);
                     }
                 }
 
                 if (line.match(/X$/) != null || line.match(/^x$/) != null) {
                     checkbox(line0);
-                }
-
-                else if (line.match(/First Name/) != null) {
+                } else if (line.match(/First Name/) != null) {
                     firstName.val(line2);
                     addSuggestions(firstName, line01);
-                }
-
-                else if (line.match(/Middle Name/) != null) {
-                    middleName.val(line2);
-                    addSuggestions(middleName, line01);
-                }
-
-                else if (line.match(/Last Name/) != null) {
+                } else if (line.match(/Middle Name/) != null) {
+                    if (!line2.match(/Last Name/)) {
+                        middleName.val(line2);
+                        addSuggestions(middleName, line01);
+                    }
+                } else if (line.match(/Last Name/) != null) {
                     lastName.val(line2);
                     addSuggestions(lastName, line01);
-                }
-
-                else if (line.match(/Birth Date/) != null) {
+                    addSuggestions(lastName, line3);
+                } else if (line.match(/Birth Date/) != null) {
                     birthDate.val(line2.replace(/\s/g, ''));
                     addSuggestions(birthDate, line01);
-                }
-
-                else if (line.match(/^Address/) != null) {
+                    addSuggestions(lastName, line3);
+                } else if (line.match(/^Address/) != null) {
                     address.val(line2);
                     addSuggestions(address, line3);
-                }
-
-                else if (line.match(/^City/) != null) {
+                } else if (line.match(/^City/) != null) {
                     city.val(line2);
                     addSuggestions(city, line3);
-                }
-
-                else if (line.match(/State/) != null) {
+                } else if (line.match(/State/) != null) {
                     state.val(line2.replace(/\s/g, ''));
                     addSuggestions(state, line2);
-                }
-
-                else if (line.match(/Zip/) != null) {
+                } else if (line.match(/Zip/) != null) {
                     zip.val(line2.replace(/\s/g, ''));
                     addSuggestions(zip, line2);
-                }
-
-                else if (line.match(/Email/) != null) {
+                } else if (line.match(/Email/) != null) {
                     email.val(line2.replace(/\s/g, ''));
                     addSuggestions(email, line3);
-                }
-
-                else if (line.match(/Phone/) != null) {
-                    phone.val(line2.replace(/\s/g, ''));
-                }
-
-                else if (line.match(/Insurance Co/) != null) {
+                } else if (line.match(/Phone/) != null) {
+                    if (!line2.match(/Email/)) {
+                        phone.val(line2.replace(/\s/g, ''));
+                    }
+                } else if (line.match(/Insurance Co/) != null) {
                     if (!line2.match(/Policy ID/)) {
                         $('#hasInsurance').prop('checked', true);
                         insuranceName.val(line2);
                         addSuggestions(insuranceName, line3);
                     }
-                }
-
-                else if (line.match(/Policy ID/) != null) {
+                } else if (line.match(/Policy ID/) != null) {
                     if (!line2.match(/ADDR/)) {
                         insuranceNum.val(line2.replace(/\s/g, ''));
                         addSuggestions(insuranceNum, line3);
                     }
-                }
-
-                else if (line.match(/^SSN/) != null) {
+                } else if (line.match(/^SSN/) != null) {
                     if (!line2.match(/Symptoms/)) {
                         ssn.val(line2.replace(/\s/g, ''));
                     }
-                }
-
-                else if (line.match(/Driver License/) != null) {
+                } else if (line.match(/Driver License/) != null) {
                     if (!line2.match(/SSN/)) {
                         driverLicense.val(line2.replace(/\s/g, ''));
                     }
-                }
-
-                else if (line.match(/Collection Date/) != null) {
+                } else if (line.match(/Collection Date/) != null) {
                     if (line2.match('[a-zA-Z]') == null) {
                         collectDate.val(line2.replace(/\s/g, ''));
-                    }
-
-                    else if (line3.match('[a-zA-Z]') == null) {
+                    } else if (line3.match('[a-zA-Z]') == null) {
                         collectDate.val(line3.replace(/\s/g, ''));
                     }
-                }
-
-                else if (line.match(/Collection Location/) != null) {
+                } else if (line.match(/Collection Location/) != null) {
                     if (line2.match(/Collection|[0-9]/) == null) {
                         collectPlace.val(line2);
-                    }
-
-                    else if (line3.match(/Collection|[0-9]/) == null) {
+                    } else if (line3.match(/Collection|[0-9]/) == null) {
                         collectPlace.val(line3);
                     }
-                }
-
-                else if (line.match(/Physician/) != null) {
+                } else if (line.match(/Physician/) != null) {
                     physician.val(line2);
                     addSuggestions(physician, line3);
-                }
-
-                else if (line.match(/NPI/) != null) {
+                } else if (line.match(/NPI/) != null) {
                     npi.val(line2.replace(/\s/g, ''));
-                }
-
-                else if (line.match(/Passport/) != null) {
-                    passport.val(line2.replace(/\s/g, ''));
+                } else if (line.match(/Passport/) != null) {
+                    if (line2) {
+                        passport.val(line2.replace(/\s/g, ''));
+                    }
                 }
             });
         }
         // Random form
         else {
+            renderPDF(pageNum);
+
             textArray.forEach(function (line, index) {
                 let line01 = textArray[index - 2];
                 let line0 = textArray[index - 1];
@@ -495,11 +462,11 @@ fetch(`/api/ocr/${id}/${batchNum}/${pageNum}`)
         // Get rid of duplicate buttons
         $("input[type=text]").filter(function () {
             return $(this).val() !== '';
-        }).each(function() {
+        }).each(function () {
             let text = $(this).val();
             let textArray = text.split(' ');
             textArray.forEach(function (str) {
-                $('button').filter(function() {
+                $('button').filter(function () {
                     return $(this).text() === str;
                 }).hide();
             });

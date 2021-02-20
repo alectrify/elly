@@ -2,6 +2,7 @@ const urlSections = window.location.pathname.split('/');
 const id = urlSections[urlSections.length - 3];
 const batchNum = urlSections[urlSections.length - 2];
 let pageNum = urlSections[urlSections.length - 1];
+let renderPageNum = urlSections[urlSections.length - 1];
 let currentPageJustProcessed = false;
 
 const hasInsurance = $('#hasInsurance');
